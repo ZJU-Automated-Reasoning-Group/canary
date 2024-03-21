@@ -1,7 +1,7 @@
 # Canary
 
 
-Canary is a program analysis and verification framework. It provides severl toolkits that can be used
+Canary is a program analysis and verification framework. It provides severaal toolkits that can be used
 individully or in combination to perform different tasks.
 The current version of Canary has been tested on x86 Linux architectures using LLVM-12 and Z3-4.11.
 
