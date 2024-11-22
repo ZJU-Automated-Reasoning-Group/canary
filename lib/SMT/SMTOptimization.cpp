@@ -444,10 +444,11 @@ bool opt_solver::solve_with_z3opt(expr &pre_cond, expr &query, expr_vector &res,
   }
 
   params Param(Ctx);
-  Param.set("priority", Ctx.str_symbol("pareto"));
-  set_param("smt.timeout", (int)timeout);
+  Param.set("priority", Ctx.str_symbol("box"));
+  // Param.set("priority", Ctx.str_symbol("pareto"));
+  // set_param("smt.timeout", (int)timeout);
   // p.set("timeout", Timeout); TODO: it seems we cannot set timeout directly to
-  // opt
+  // opt?
 
   if (mode == g_min || mode == g_min_max) {
     optimize LowerFinder(Ctx);
@@ -505,9 +506,8 @@ bool opt_solver::solve_with_z3opt(expr &pre_cond, expr_vector &query,
 
   params Param(Ctx);
   Param.set("priority", Ctx.str_symbol("box"));
-  set_param("smt.timeout", (int)timeout);
-  // p.set("timeout", Timeout); TODO: it seems we cannot set timeout directly to
-  // opt
+  // set_param("smt.timeout", (int)timeout);
+  // p.set("timeout", Timeout); TODO: it seems we cannot set timeout directly to opt?
   optimize Opt(Ctx);
   Opt.set(Param);
   Opt.add(pre_cond);

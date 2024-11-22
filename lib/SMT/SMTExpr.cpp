@@ -127,7 +127,8 @@ std::pair<int, int> SMTExpr::abstractInterval(SMTExpr &E, int Timeout) {
   z3::context &Ctx = Expr.ctx();
   std::pair<int, int> Ret(INT_MIN, INT_MAX);
   z3::params Param(Ctx);
-  Param.set("priority", Ctx.str_symbol("pareto"));
+  // Param.set("priority", Ctx.str_symbol("pareto"));
+  Param.set("priority", Ctx.str_symbol("box"));
   z3::set_param("smt.timeout",
                 Timeout); // p.set("timeout", Timeout); TODO: it seems we cannot
                           // set timeout directly to opt
@@ -168,7 +169,8 @@ void SMTExpr::abstractIntervalAsExprvec(SMTExpr &E, SMTExprVec &Evec,
   // Evec.push_back(SMTExpr(&getSMTFactory(), Ctx.bool_val(false)));
   // Evec.push_back(SMTExpr(&getSMTFactory(), Ctx.bool_val(false)));
   z3::params Param(Ctx);
-  Param.set("priority", Ctx.str_symbol("pareto"));
+  // Param.set("priority", Ctx.str_symbol("pareto"));
+  Param.set("priority", Ctx.str_symbol("box"));
   z3::set_param("smt.timeout",
                 Timeout); // p.set("timeout", Timeout); TODO: it seems we cannot
                           // set timeout directly to opt

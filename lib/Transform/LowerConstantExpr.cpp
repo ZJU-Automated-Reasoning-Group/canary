@@ -1,5 +1,5 @@
 /*
- *  Popeye lifts protocol source code in C to its specification in BNF
+ *  Canary features a fast unification-based alias analysis for C programs
  *  Copyright (C) 2021 Qingkai Shi <qingkaishi@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -19,9 +19,11 @@
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Verifier.h>
-#include <llvm/Support/Debug.h>
-#include <set>
 #include "Transform/LowerConstantExpr.h"
+
+
+#include <set>
+#include <map>
 
 #define DEBUG_TYPE "LowerConstantExpr"
 

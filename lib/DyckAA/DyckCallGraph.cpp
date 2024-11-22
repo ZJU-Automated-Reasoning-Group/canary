@@ -67,7 +67,9 @@ void DyckCallGraph::dotCallGraph(const std::string &ModuleIdentifier) {
     auto FWIt = FunctionMap.begin();
     while (FWIt != FunctionMap.end()) {
         DyckCallGraphNode *FW = FWIt->second;
-        fprintf(FOut, "\tf%p[label=\"%s\"]\n", FW, FW->getLLVMFunction()->getName().data());
+        if (FWIt->first) {
+            fprintf(FOut, "\tf%p[label=\"%s\"]\n", FW, FW->getLLVMFunction()->getName().data());
+        }
         FWIt++;
     }
 
