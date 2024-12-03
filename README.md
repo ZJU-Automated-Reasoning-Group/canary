@@ -12,18 +12,31 @@ The current version of Canary has been tested on x86 Linux architectures using L
 
 ## Building 
 
+First, you need to build LLVM (12 or 14) by following the commands
 
+```bash
+git clone https://github.com/llvm/llvm-project.git
+cd llvm-project
+git checkout llvmorg-14.0.0  # or llvmorg-12.0.0 for version 12
+mkdir build
+cd build
+cmake -DLLVM_ENABLE_PROJECTS="clang;compiler-rt" -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD="X86" ../llvm
+make -jN
+```
+
+Then, you can build this projet as follow
 ```bash
 git clone https://github.com/ZJU-Automated-Reasoning-Group/canary
 cd canary
 mkdir build
 cd build
-cmake ..
-make
+cmake ../ -DLLVM_BUILD_PATH=[LLVM Build Path]
+make -jN
 ```
 
-Currently, we asume that the system has the right versions of LLVM and Z3.
+Currently, we asume that the system has the right version of Z3.
 
+TBD: download the LLVM and Z3 obj files automatically...
 
 ## Using the Alias Analysis
 
@@ -70,20 +83,5 @@ to the edges in call graphs.
 ./owl file.smt2
 ~~~~
 
-## TODO LIST
 
-
-
-- Add unit test (at least for the SMT library)
-- Integrate the pre-condition inference engine in Beacon (SP'22), which relies on some code from KLEE (it does not use the symbolic execution engine in KLEE) and SVF. 
-- Integrate SVF as a library, which implementes several pointer analsyes with different precisions.
-- IR optimization: reduant load/store elimination, control-flow refinement, superoptimization, etc.
-- Slicing (e.g., conventional slicing, thin slicing, hybrid thin slicing, ...)
-- Instrumentation
-- (Low priority) Symbolic emulation/execution (e.g., KLEE, ...)
-- (Low priority) Numerical abstract interpretation (e.g., IKOS, CLAM/Crab, ...)
-- (Low priority) Software model checking (e.g., Smarck, Seahorn, ...)
-- (Low priority) Analyzing IR lifted from binaries (e.g., by Remill, retdec, ...)
-- (Low priority) Clang AST-based bug checking (e.g., Clang static analyzer, ...)
-- (Low priority) Data flow analsyis frameowrk (e.g., Pharsar, ...)
 
