@@ -10,18 +10,22 @@ The current version of Canary has been tested on x86 Linux architectures using L
 - Binary Decision Diagram (BDD): (See `lib/cudd`)
 
 
-## Building 
+## Installation
 
-First, you need to build LLVM (12 or 14) by following the commands
+Build LLVM
 
 ```bash
+# Clone LLVM repository
 git clone https://github.com/llvm/llvm-project.git
 cd llvm-project
-git checkout llvmorg-14.0.0  # or llvmorg-12.0.0 for version 12
-mkdir build
-cd build
-cmake -DLLVM_ENABLE_PROJECTS="clang;compiler-rt" -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD="X86" ../llvm
-make -jN
+
+# Checkout desired version
+git checkout llvmorg-14.0.0  # or llvmorg-12.0.0
+
+# Build LLVM
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../llvm
+make -j$(nproc)  # Uses all available CPU cores
 ```
 
 Then, you can build this projet as follow
@@ -30,8 +34,8 @@ git clone https://github.com/ZJU-Automated-Reasoning-Group/canary
 cd canary
 mkdir build
 cd build
-cmake ../ -DLLVM_BUILD_PATH=[LLVM Build Path]
-make -jN
+cmake ../ -DLLVM_BUILD_PATH=/path/to/llvm/build
+make -j$(nproc)
 ```
 
 Currently, we asume that the system has the right version of Z3.
