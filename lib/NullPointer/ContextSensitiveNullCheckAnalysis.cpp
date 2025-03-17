@@ -20,6 +20,8 @@ static cl::opt<unsigned> CSMaxContextDepth("csnca-max-depth", cl::init(3), cl::H
                                          cl::desc("Maximum depth of calling context to consider for NCA."));
 // Define our own verbose option
 static cl::opt<bool> CSVerbose("cs-verbose", cl::desc("Enable verbose output for context-sensitive analysis"), cl::init(false));
+// Add option to control per-function statistics
+static cl::opt<bool> CSPrintPerFunction("cs-print-per-function", cl::desc("Print per-function statistics for context-sensitive analysis"), cl::init(false));
 
 char ContextSensitiveNullCheckAnalysis::ID = 0;
 static RegisterPass<ContextSensitiveNullCheckAnalysis> X("csnca", "context-sensitive null check analysis.");
@@ -100,6 +102,14 @@ bool ContextSensitiveNullCheckAnalysis::runOnModule(Module &M) {
         unsigned FuncTotalPtrs = 0;
         unsigned FuncNotNullPtrs = 0;
         
+        // Collect all contexts for this function
+        std::vector<Context> FunctionContexts;
+        for (auto &Entry : AnalysisMap) {
+            if (Entry.first.first == &F && Entry.second != nullptr) {
+                FunctionContexts.push_back(Entry.first.second);
+            }
+        }
+        
         for (auto &BB : F) {
             for (auto &I : BB) {
                 // Count pointer operands
@@ -108,8 +118,18 @@ bool ContextSensitiveNullCheckAnalysis::runOnModule(Module &M) {
                     if (Op->getType()->isPointerTy()) {
                         TotalPtrInsts++;
                         FuncTotalPtrs++;
-                        // Check if this operand is proven not-null
-                        if (!mayNull(Op, &I, EmptyContext)) {
+                        
+                        // Check if this pointer is NOT_NULL in ANY analyzed context
+                        bool IsNotNull = false;
+                        for (const Context &Ctx : FunctionContexts) {
+                            if (!mayNull(Op, &I, Ctx)) {
+                                IsNotNull = true;
+                                break;
+                            }
+                        }
+                        
+                        // If it's not null in any context, count it as NOT_NULL
+                        if (IsNotNull) {
                             NotNullPtrInsts++;
                             FuncNotNullPtrs++;
                         }
@@ -127,16 +147,19 @@ bool ContextSensitiveNullCheckAnalysis::runOnModule(Module &M) {
     errs() << "Percentage of NOT_NULL pointers: " << 
         (TotalPtrInsts > 0 ? (NotNullPtrInsts * 100.0 / TotalPtrInsts) : 0) << "%\n";
     
-    errs() << "\nPer-function statistics:\n";
-    for (auto &Stat : FunctionStats) {
-        Function *F = Stat.first;
-        unsigned FuncTotal = Stat.second.first;
-        unsigned FuncNotNull = Stat.second.second;
-        
-        if (FuncTotal > 0) {
-            errs() << "  " << F->getName() << ": " 
-                   << FuncNotNull << "/" << FuncTotal << " NOT_NULL pointers ("
-                   << (FuncNotNull * 100.0 / FuncTotal) << "%)\n";
+    // Only print per-function statistics if enabled
+    if (CSPrintPerFunction) {
+        errs() << "\nPer-function statistics:\n";
+        for (auto &Stat : FunctionStats) {
+            Function *F = Stat.first;
+            unsigned FuncTotal = Stat.second.first;
+            unsigned FuncNotNull = Stat.second.second;
+            
+            if (FuncTotal > 0) {
+                errs() << "  " << F->getName() << ": " 
+                       << FuncNotNull << "/" << FuncTotal << " NOT_NULL pointers ("
+                       << (FuncNotNull * 100.0 / FuncTotal) << "%)\n";
+            }
         }
     }
     errs() << "================================================\n\n";
@@ -216,6 +239,12 @@ bool ContextSensitiveNullCheckAnalysis::mayNull(Value *Ptr, Instruction *Inst, c
     Context LimitedCtx = Ctx;
     if (LimitedCtx.size() > MaxContextDepth) {
         LimitedCtx.erase(LimitedCtx.begin(), LimitedCtx.begin() + (LimitedCtx.size() - MaxContextDepth));
+    }
+    
+    // First check if the context-sensitive flow analysis says it's not null in this context
+    auto *NFA = &getAnalysis<ContextSensitiveNullFlowAnalysis>();
+    if (NFA->notNull(Ptr, LimitedCtx)) {
+        return false; // If flow analysis proves NOT_NULL in this context, then it's definitely NOT_NULL
     }
     
     // Try to find the analysis for this function and context

@@ -813,8 +813,10 @@ void AAAnalyzer::handleInst(Instruction *Inst, DyckCallGraphNode *Parent) {
         case Instruction::Resume:
         case Instruction::LandingPad:
         case Instruction::Invoke:
-            llvm_unreachable("please use -lower-invoke");
-            exit(1);
+            // Instead of crashing, just emit a warning and skip these instructions
+            errs() << "WARNING: Skipping " << Inst->getOpcodeName() << " instruction. "
+                   << "Consider using -lower-invoke for better analysis results.\n";
+            break;
         case Instruction::Call: {
             auto *CallI = (CallInst *) Inst;
             if (CallI->isInlineAsm()) break;
@@ -1071,8 +1073,8 @@ bool AAAnalyzer::handlePointerFunctionCalls(DyckCallGraphNode *Caller, int Count
         unsigned CandCount = 0;
         if (CandTotal == 0) {
 //			outs() << "Handling indirect calls in Function #" << FUNCTION_COUNT << "... " << "100%, 100%. Done!\r";
-            PCIt++;
-            continue;
+             PCIt++;
+              continue;
         }
 
         auto PFIt = UnhandledFunction.begin();

@@ -27,6 +27,8 @@
 using namespace llvm;
 
 static cl::opt<unsigned> Round("nca-round", cl::init(2), cl::Hidden, cl::desc("# rounds"));
+// Add option to control per-function statistics
+static cl::opt<bool> PrintPerFunction("print-per-function", cl::desc("Print per-function statistics for context-insensitive analysis"), cl::init(false));
 
 char NullCheckAnalysis::ID = 0;
 static RegisterPass<NullCheckAnalysis> X("nca", "soundly checking if a pointer may be nullptr.");
@@ -106,16 +108,19 @@ bool NullCheckAnalysis::runOnModule(Module &M) {
     errs() << "Percentage of NOT_NULL pointers: " << 
         (TotalPtrInsts > 0 ? (NotNullPtrInsts * 100.0 / TotalPtrInsts) : 0) << "%\n";
     
-    errs() << "\nPer-function statistics:\n";
-    for (auto &Stat : FunctionStats) {
-        Function *F = Stat.first;
-        unsigned FuncTotal = Stat.second.first;
-        unsigned FuncNotNull = Stat.second.second;
-        
-        if (FuncTotal > 0) {
-            errs() << "  " << F->getName() << ": " 
-                   << FuncNotNull << "/" << FuncTotal << " NOT_NULL pointers ("
-                   << (FuncNotNull * 100.0 / FuncTotal) << "%)\n";
+    // Only print per-function statistics if enabled
+    if (PrintPerFunction) {
+        errs() << "\nPer-function statistics:\n";
+        for (auto &Stat : FunctionStats) {
+            Function *F = Stat.first;
+            unsigned FuncTotal = Stat.second.first;
+            unsigned FuncNotNull = Stat.second.second;
+            
+            if (FuncTotal > 0) {
+                errs() << "  " << F->getName() << ": " 
+                       << FuncNotNull << "/" << FuncTotal << " NOT_NULL pointers ("
+                       << (FuncNotNull * 100.0 / FuncTotal) << "%)\n";
+            }
         }
     }
     errs() << "================================================\n\n";
