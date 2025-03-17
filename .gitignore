@@ -1,3 +1,6 @@
+test/regression/*.bc   
+test/regression/*.ll
+.vscode
 .settings
 .idea
 .cproject

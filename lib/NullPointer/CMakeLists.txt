@@ -3,4 +3,7 @@ add_library(CanaryNullPointer STATIC
         NullCheckAnalysis.cpp
         NullEquivalenceAnalysis.cpp
         NullFlowAnalysis.cpp
+        ContextSensitiveLocalNullCheckAnalysis.cpp
+        ContextSensitiveNullCheckAnalysis.cpp
+        ContextSensitiveNullFlowAnalysis.cpp
 )

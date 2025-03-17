@@ -16,6 +16,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "NullPointer/NullCheckAnalysis.h"
+#include "NullPointer/ContextSensitiveNullCheckAnalysis.h"
+#include "Support/RecursiveTimer.h"
+#include "Support/Statistics.h"
+#include "Transform/LowerConstantExpr.h"
+
 #include <llvm/Bitcode/BitcodeWriterPass.h>
 #include <llvm/IR/IRPrintingPasses.h>
 #include <llvm/IR/LLVMContext.h>
@@ -33,13 +39,7 @@
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/Utils.h>
-
 #include <memory>
-
-#include "NullPointer/NullCheckAnalysis.h"
-#include "Support/RecursiveTimer.h"
-#include "Support/Statistics.h"
-#include "Transform/LowerConstantExpr.h"
 
 using namespace llvm;
 
@@ -52,6 +52,9 @@ static cl::opt<std::string> OutputFilename("o", cl::desc("<output bitcode file>"
 static cl::opt<bool> OutputAssembly("S", cl::desc("Write output as LLVM assembly"), cl::init(false));
 
 static cl::opt<bool> OnlyStatistics("s", cl::desc("Only output statistics"), cl::init(false));
+
+// Options to select which analysis to run
+static cl::opt<bool> RunContextSensitiveAnalysis("cs", cl::desc("Run context-sensitive analysis"), cl::init(false));
 
 int main(int argc, char **argv) {
     InitLLVM X(argc, argv);
@@ -110,7 +113,16 @@ int main(int argc, char **argv) {
     if (!OutputAssembly.getValue()) {
         auto *AnalysisTimer = new RecursiveTimerPass("Analyzing the bitcode");
         Passes.add(AnalysisTimer->start());
-        Passes.add(new NullCheckAnalysis());
+        
+        // Choose which analysis to run based on command line options
+        if (RunContextSensitiveAnalysis) {
+            errs() << "Running context-sensitive null check analysis\n";
+            Passes.add(new ContextSensitiveNullCheckAnalysis());
+        } else {
+            errs() << "Running context-insensitive null check analysis\n";
+            Passes.add(new NullCheckAnalysis());
+        }
+        
         Passes.add(AnalysisTimer->done());
     }
 
