@@ -17,11 +17,14 @@
  */
 
 #include <llvm/IR/Module.h>
+#include <llvm/Support/raw_ostream.h>
 #include "NullPointer/LocalNullCheckAnalysis.h"
 #include "NullPointer/NullCheckAnalysis.h"
 #include "NullPointer/NullFlowAnalysis.h"
 #include "Support/RecursiveTimer.h"
 #include "Support/ThreadPool.h"
+
+using namespace llvm;
 
 static cl::opt<unsigned> Round("nca-round", cl::init(2), cl::Hidden, cl::desc("# rounds"));
 
@@ -63,6 +66,59 @@ bool NullCheckAnalysis::runOnModule(Module &M) {
         ThreadPool::get()->wait(); // wait for all tasks to finish
         Funcs.clear();
     } while (Count++ < Round.getValue() && NFA->recompute(Funcs));
+
+    // Collect and print statistics
+    unsigned TotalPtrInsts = 0;
+    unsigned NotNullPtrInsts = 0;
+    std::map<Function*, std::pair<unsigned, unsigned>> FunctionStats;
+    
+    for (auto &F : M) {
+        if (F.empty()) continue;
+        
+        unsigned FuncTotalPtrs = 0;
+        unsigned FuncNotNullPtrs = 0;
+        
+        for (auto &BB : F) {
+            for (auto &I : BB) {
+                // Count pointer operands
+                for (unsigned i = 0; i < I.getNumOperands(); i++) {
+                    Value *Op = I.getOperand(i);
+                    if (Op->getType()->isPointerTy()) {
+                        TotalPtrInsts++;
+                        FuncTotalPtrs++;
+                        // Check if this operand is proven not-null
+                        // Only check if the operand is a valid operand of the instruction
+                        if (!mayNull(Op, &I)) {
+                            NotNullPtrInsts++;
+                            FuncNotNullPtrs++;
+                        }
+                    }
+                }
+            }
+        }
+        
+        FunctionStats[&F] = {FuncTotalPtrs, FuncNotNullPtrs};
+    }
+    
+    errs() << "\n=== Context-Insensitive Analysis Statistics ===\n";
+    errs() << "Total pointer operands: " << TotalPtrInsts << "\n";
+    errs() << "Pointer operands proven NOT_NULL: " << NotNullPtrInsts << "\n";
+    errs() << "Percentage of NOT_NULL pointers: " << 
+        (TotalPtrInsts > 0 ? (NotNullPtrInsts * 100.0 / TotalPtrInsts) : 0) << "%\n";
+    
+    errs() << "\nPer-function statistics:\n";
+    for (auto &Stat : FunctionStats) {
+        Function *F = Stat.first;
+        unsigned FuncTotal = Stat.second.first;
+        unsigned FuncNotNull = Stat.second.second;
+        
+        if (FuncTotal > 0) {
+            errs() << "  " << F->getName() << ": " 
+                   << FuncNotNull << "/" << FuncTotal << " NOT_NULL pointers ("
+                   << (FuncNotNull * 100.0 / FuncTotal) << "%)\n";
+        }
+    }
+    errs() << "================================================\n\n";
 
     return false;
 }
