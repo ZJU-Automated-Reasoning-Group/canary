@@ -43,7 +43,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-option(BUILD_TESTS "build all unit tests" OFF)
 
 # Include LLVM directories
 include_directories(${LLVM_INCLUDE_DIRS})
@@ -83,4 +82,4 @@ if (BUILD_TESTS)
 endif()
 
 enable_testing()
-add_test(AliasTest ${PROJECT_BINARY_DIR}/test/AliasTest)
+add_test(AliasTest ${PROJECT_BINARY_DIR}/test/AliasTest) 

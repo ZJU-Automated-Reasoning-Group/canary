@@ -9,67 +9,103 @@
 #define NULLPOINTER_CONTEXTSENSITIVENULLFLOWANALYSIS_H
 
 #include <llvm/Pass.h>
-#include <llvm/Support/raw_ostream.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/Support/CommandLine.h>
-#include <llvm/Support/Debug.h>
-#include <map>
 #include <set>
+#include <map>
+#include <unordered_map>
+#include <string>
+
 #include "DyckAA/DyckVFG.h"
-#include "DyckAA/DyckAliasAnalysis.h"
-#include "DyckAA/DyckCallGraph.h"
+#include "NullPointer/AliasAnalysisAdapter.h"
 
 using namespace llvm;
 
-// Context representation for context-sensitive analysis
-// A context is a sequence of call sites (represented by CallInst*)
-typedef std::vector<CallInst*> Context;
+// Context sensitive context
+typedef std::vector<CallInst *> Context;
+
+// Function context pair
+typedef std::pair<Function *, Context> FunctionContextPair;
+
+// Hash function for FunctionContextPair
+namespace std {
+    template<>
+    struct hash<FunctionContextPair> {
+        size_t operator()(const FunctionContextPair &FCP) const {
+            size_t H = hash<Function *>()(FCP.first);
+            for (auto CI: FCP.second) {
+                H += hash<CallInst *>()(CI);
+            }
+            return H;
+        }
+    };
+
+    template<>
+    struct equal_to<FunctionContextPair> {
+        bool operator()(const FunctionContextPair &LHS, const FunctionContextPair &RHS) const {
+            if (LHS.first != RHS.first) return false;
+            if (LHS.second.size() != RHS.second.size()) return false;
+            for (unsigned K = 0; K < LHS.second.size(); ++K) {
+                if (LHS.second[K] != RHS.second[K]) return false;
+            }
+            return true;
+        }
+    };
+}
+
+// mapping from context to a set of nonnull args
+typedef std::unordered_map<FunctionContextPair, std::set<std::pair<CallInst *, unsigned>>> NewNonNullEdgesMap;
 
 class ContextSensitiveNullFlowAnalysis : public ModulePass {
 private:
-    DyckAliasAnalysis *DAA;
+    // Alias analysis adapter - can be either DyckAA or CFLAA
+    AliasAnalysisAdapter *AAA;
+    
+    // VFG from DyckValueFlowAnalysis
     DyckVFG *VFG;
     
-    // Maps a context and a node to whether it's non-null
-    std::map<std::pair<Context, DyckVFGNode*>, bool> ContextNonNullNodes;
-    
-    // Maps a context and an edge to whether it's a non-null edge
-    std::map<std::tuple<Context, DyckVFGNode*, DyckVFGNode*>, bool> ContextNonNullEdges;
-    
-    // New non-null edges discovered in each function, grouped by context
-    std::map<std::pair<Function*, Context>, std::set<std::pair<DyckVFGNode*, DyckVFGNode*>>> NewNonNullEdges;
-    
-    // Maximum context depth to consider (to prevent context explosion)
+    // Max context depth
     unsigned MaxContextDepth;
+    
+    // NonNull edges collected during the analysis for each function & context
+    NewNonNullEdgesMap NewNonNullEdges;
+    
+    // Internally created alias analysis adapter - needs to be deleted
+    bool OwnsAliasAnalysisAdapter;
+    
+    // Command line option for using CFLAA
+    static cl::opt<bool> UseCFLAA;
 
 public:
     static char ID;
 
     ContextSensitiveNullFlowAnalysis();
+
     ~ContextSensitiveNullFlowAnalysis() override;
 
-    bool runOnModule(Module &M) override;
     void getAnalysisUsage(AnalysisUsage &AU) const override;
 
-public:
-    /// return true if some changes happen
-    /// return false if nothing is changed
-    bool recompute(std::set<std::pair<Function*, Context>> &NewNonNullFunctionContexts);
+    bool runOnModule(Module &M) override;
 
-    /// update NewNonNullEdges so that we can call recompute()
-    /// @{
-    void add(Function*, Context, Value*, Value*);
-    void add(Function*, Context, CallInst*, unsigned K); // for call
-    void add(Function*, Context, Value*); // for return
-    /// @}
+    // return true if Ptr can not be a null pointer
+    bool notNull(Value *Ptr, Context Ctx) const;
 
-    /// return true if the input value is not null in the given context
-    bool notNull(Value*, const Context&) const;
-    
-    /// Helper method to get a context string for debugging
+    void add(Function *F, Context Ctx, Value *V1, Value *V2 = nullptr);
+
+    void add(Function *F, Context Ctx, CallInst *CI, unsigned int K);
+
+    void add(Function *F, Context Ctx, Value *Ret);
+
+    // Helper method to get a context string for debugging
     std::string getContextString(const Context& Ctx) const;
     
-    /// Helper method to create a new context by extending an existing one
+    // Helper method to create a new context by extending an existing one
     Context extendContext(const Context& Ctx, CallInst* CI) const;
+    
+    // Recompute analysis with new non-null edges
+    bool recompute(std::set<std::pair<Function*, Context>> &NewNonNullFunctionContexts);
 };
 
 #endif // NULLPOINTER_CONTEXTSENSITIVENULLFLOWANALYSIS_H 

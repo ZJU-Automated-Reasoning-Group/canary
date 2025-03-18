@@ -6,4 +6,5 @@ add_library(CanaryNullPointer STATIC
         ContextSensitiveLocalNullCheckAnalysis.cpp
         ContextSensitiveNullCheckAnalysis.cpp
         ContextSensitiveNullFlowAnalysis.cpp
+        AliasAnalysisAdapter.cpp
 )

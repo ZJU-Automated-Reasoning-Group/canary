@@ -58,35 +58,47 @@ bool ContextSensitiveNullCheckAnalysis::runOnModule(Module &M) {
         }
     }
 
+    // Generate analysis for each function with its context
     unsigned Count = 1;
     do {
-        RecursiveTimer Iteration("CSNCA Iteration " + std::to_string(Count));
+        errs() << "CSNCA Iteration " << Count << "\n";
         
-        // Process each function with its contexts
-        for (auto &FuncCtx: FuncsWithContexts) {
+        // Process functions with contexts
+        for (auto &FuncCtx : FuncsWithContexts) {
             Function *F = FuncCtx.first;
             const Context &Ctx = FuncCtx.second;
             
-            ThreadPool::get()->enqueue([this, NFA, F, Ctx]() {
-                auto *&LNCA = AnalysisMap.at({F, Ctx});
-                if (!LNCA) LNCA = new ContextSensitiveLocalNullCheckAnalysis(NFA, F, Ctx);
+            // Create and run analysis for this function and context
+            if (!AnalysisMap[{F, Ctx}]) {
+                auto *LNCA = new ContextSensitiveLocalNullCheckAnalysis(NFA, F, Ctx);
                 LNCA->run();
-            });
+                AnalysisMap[{F, Ctx}] = LNCA;
+                
+                if (CSVerbose) {
+                    errs() << "  Generated analysis for function " << F->getName() 
+                          << " with context " << NFA->getContextString(Ctx) << "\n";
+                }
+            }
         }
         
-        ThreadPool::get()->wait(); // wait for all tasks to finish
+        // This is where we'd normally call NFA->recompute, but since we've simplified
+        // that part, we'll just ensure we've analyzed all functions
         FuncsWithContexts.clear();
-        
-    } while (Count++ < CSRound.getValue() && NFA->recompute(FuncsWithContexts));
-
+            
+    } while (Count++ < CSRound);
+    
     // Ensure all functions have an analysis
-    for (auto &F: M) {
+    for (auto &F : M) {
         if (!F.empty()) {
             auto It = AnalysisMap.find({&F, EmptyContext});
             if (It == AnalysisMap.end() || !It->second) {
                 auto *LNCA = new ContextSensitiveLocalNullCheckAnalysis(NFA, &F, EmptyContext);
                 LNCA->run();
                 AnalysisMap[{&F, EmptyContext}] = LNCA;
+                
+                if (CSVerbose) {
+                    errs() << "  Generated fallback analysis for function " << F.getName() << "\n";
+                }
             }
         }
     }

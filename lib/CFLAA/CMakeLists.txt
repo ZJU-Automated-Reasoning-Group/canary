@@ -4,7 +4,7 @@ add_library(CFLAA
 )
 
 target_link_libraries(CFLAA
-  Support
+  CanarySupport
   LLVMCore
   LLVMSupport
 ) 

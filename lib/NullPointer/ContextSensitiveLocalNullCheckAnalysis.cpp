@@ -1,6 +1,6 @@
 /*
  *  Author: rainoftime
- *  Date: 2025-03
+ *  Date: 2025-04
  *  Description: Context-sensitive local null check analysis
  */
 
@@ -10,6 +10,7 @@
 #include <llvm/Support/Debug.h>
 #include <llvm/IR/InstIterator.h>
 #include "NullPointer/ContextSensitiveLocalNullCheckAnalysis.h"
+#include "NullPointer/AliasAnalysisAdapter.h"
 #include "Support/API.h"
 
 ContextSensitiveLocalNullCheckAnalysis::ContextSensitiveLocalNullCheckAnalysis(
@@ -21,7 +22,16 @@ ContextSensitiveLocalNullCheckAnalysis::ContextSensitiveLocalNullCheckAnalysis(
         auto *Arg = F->getArg(K);
         if (!Arg->getType()->isPointerTy()) continue;
         auto ArgX = NEA.get(Arg);
-        if (NFA->notNull(Arg, Ctx) || NFA->notNull(ArgX, Ctx)) continue;
+        
+        // Get the first instruction in the function as the instruction point
+        Instruction *FirstInst = nullptr;
+        if (!F->empty() && !F->front().empty()) {
+            FirstInst = &F->front().front();
+        }
+        
+        if ((FirstInst && NFA->notNull(Arg, Ctx)) || 
+            (FirstInst && NFA->notNull(ArgX, Ctx))) continue;
+            
         unsigned ID = PtrIDMap.size();
         PtrIDMap[ArgX] = ID;
     }
@@ -32,7 +42,9 @@ ContextSensitiveLocalNullCheckAnalysis::ContextSensitiveLocalNullCheckAnalysis(
                 auto Op = I.getOperand(K);
                 if (!Op->getType()->isPointerTy()) continue;
                 auto OpX = NEA.get(Op);
+                
                 if (NFA->notNull(OpX, Ctx) || NFA->notNull(Op, Ctx)) continue;
+                
                 auto It = PtrIDMap.find(OpX);
                 if (It != PtrIDMap.end()) continue;
                 unsigned ID = PtrIDMap.size();
@@ -170,7 +182,7 @@ void ContextSensitiveLocalNullCheckAnalysis::tag() {
                 if (OpKMustNonNull) {
                     Orig = Orig | (1 << K);
                     if (isa<ReturnInst>(&I)) {
-                        NFA->add(F, Ctx, OpK);
+                        NFA->add(F, Ctx, OpK, nullptr);
                     } else if (auto *CI = dyn_cast<CallInst>(&I)) {
 #if defined(LLVM12)
                         if (K < CI->getNumArgOperands()) NFA->add(F, Ctx, CI, K);

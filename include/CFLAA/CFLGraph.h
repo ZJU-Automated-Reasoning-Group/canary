@@ -37,7 +37,7 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/ErrorHandling.h"
 
-#include "AliasAnalysisSummary.h"
+#include "CFLAA/AliasAnalysisSummary.h"
 
 #include <cassert>
 #include <cstdint>

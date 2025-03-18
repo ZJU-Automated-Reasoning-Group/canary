@@ -70,3 +70,54 @@ else()
             ${Z3_LIBRARIES} pthread dl
     )
 endif()
+
+# Find out what libraries are needed by LLVM 
+llvm_map_components_to_libnames(LLVM_LINK_COMPONENTS
+  AggressiveInstCombine
+  Analysis
+  AsmParser
+  BinaryFormat
+  BitReader
+  BitWriter
+  BitstreamReader
+  CodeGen
+  Core
+  Coroutines
+  Demangle
+  FrontendOpenMP
+  IRReader
+  InstCombine
+  Instrumentation
+  Linker
+  MC
+  MCParser
+  Object
+  ProfileData
+  Remarks
+  ScalarOpts
+  Support
+  Target
+  TransformUtils
+  Vectorize
+  ipo
+)
+
+# Add alias analysis comparison tool
+add_executable(alias_analysis alias_analysis.cpp)
+
+# Add the alias_analysis executable
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    target_link_libraries(alias_analysis PRIVATE
+           CanaryDyckAA CFLAA CanarySupport
+            -Wl,--start-group
+            ${LLVM_LINK_COMPONENTS}
+            -Wl,--end-group
+            pthread dl
+    )
+else()
+    target_link_libraries(alias_analysis PRIVATE
+           CanaryDyckAA CFLAA CanarySupport
+            ${LLVM_LINK_COMPONENTS}
+            pthread dl
+    )
+endif()
