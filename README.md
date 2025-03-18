@@ -5,11 +5,12 @@ Canary is a program analysis and verification framework. It provides severl tool
 individully or in combination to perform different tasks.
 The current version of Canary has been tested on x86 Linux architectures using LLVM-12 and Z3-4.11.
 
-- Alias Analysis: a unification-based, exhuastive alias analysis (See `lib/DyckAA`)
-- Range Analysis: analyzes possible value ranges for program variables (See `lib/Support/RangeAnalysis.cpp`)
+- DyckAA: a unification-based, exhuastive alias analysis (See `lib/DyckAA`)
+- CFLAA: All files in the llvm subfolder are 1:1 copied from LLVM 14.0.6 and are subject to the LLVM license.
+We copy these files, as LLVM removed them in the transition from version 14 to 15
 - SMT Solving (See `lib/SMT`)
 - Binary Decision Diagram (BDD): (See `lib/cudd`)
-
+- kint: a static bug finder.
 
 ## Installation
 
