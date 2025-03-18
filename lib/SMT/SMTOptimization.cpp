@@ -602,6 +602,8 @@ bool opt_solver::compact_check_misc(expr &G, expr_vector &FVec,
     // is not a good idea..
     return false;
   }
+  
+  return true;
 }
 
 // G is the pre-conditioned constraint, and FVec contains F1,...,Fn

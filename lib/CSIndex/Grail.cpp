@@ -5,6 +5,7 @@ There is no additional support offered, nor are the author(s)
 or their institutions liable under any circumstances.
 */
 #include <queue>
+#include <random>
 #include "CSIndex/Grail.h"
 #include "CSIndex/TCSEstimator.h"
 
@@ -91,7 +92,9 @@ void Grail::setIndex(Graph& g, int traversal){
 			_index.push_back(i);
 		}
 	}else if(traversal%2==0){
-			random_shuffle(_index.begin(),_index.end());
+		std::random_device rd;
+		std::mt19937 g(rd());
+		std::shuffle(_index.begin(),_index.end(), g);
 	}	
 }
 
@@ -230,7 +233,9 @@ void Grail::randomlabeling(Graph& tree) {
 	vector<int>::iterator sit;
 	int pre_post = 0;
 	vector<bool> visited(tree.num_vertices(), false);
-	random_shuffle(roots.begin(),roots.end());	
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(roots.begin(),roots.end(), g);	
 	for (sit = roots.begin(); sit != roots.end(); sit++) {
 		pre_post++;
 		visit(tree, *sit, pre_post, visited);
@@ -242,7 +247,9 @@ int Grail::visit(Graph& tree, int vid, int& pre_post, vector<bool>& visited) {
 //	cout << "entering " << vid << endl;
 	visited[vid] = true;
 	EdgeList el = tree.out_edges(vid);
-	random_shuffle(el.begin(),el.end());
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(el.begin(),el.end(), g);
 	EdgeList::iterator eit;
 	int pre_order = tree.num_vertices()+1;
 	tree[vid].middle->push_back(pre_post);

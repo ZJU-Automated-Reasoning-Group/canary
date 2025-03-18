@@ -46,15 +46,18 @@ using namespace llvm;
 static cl::opt<std::string> InputFilename(cl::Positional, cl::desc("<input bitcode file>"),
                                           cl::init("-"), cl::value_desc("filename"));
 
-static cl::opt<std::string> OutputFilename("o", cl::desc("<output bitcode file>"),
-                                           cl::init(""), cl::value_desc("filename"));
+static cl::opt<std::string> OutputFilename("o", cl::desc("Override output filename"),
+                                           cl::value_desc("filename"));
 
-static cl::opt<bool> OutputAssembly("S", cl::desc("Write output as LLVM assembly"), cl::init(false));
+static cl::opt<bool> OutputAssembly("S", cl::desc("Write LLVM assembly instead of bitcode"),
+                                   cl::init(false));
 
 static cl::opt<bool> OnlyStatistics("s", cl::desc("Only output statistics"), cl::init(false));
 
-// Options to select which analysis to run
-static cl::opt<bool> RunContextSensitiveAnalysis("cs", cl::desc("Run context-sensitive analysis"), cl::init(false));
+static cl::opt<bool> RunContextSensitiveAnalysis("ctx", cl::desc("Run context-sensitive analysis"), 
+                                               cl::init(false));
+
+static cl::opt<unsigned> RecordSize("size", cl::desc("Size of context records"), cl::init(1));
 
 int main(int argc, char **argv) {
     InitLLVM X(argc, argv);

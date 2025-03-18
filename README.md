@@ -6,6 +6,7 @@ individully or in combination to perform different tasks.
 The current version of Canary has been tested on x86 Linux architectures using LLVM-12 and Z3-4.11.
 
 - Alias Analysis: a unification-based, exhuastive alias analysis (See `lib/DyckAA`)
+- Range Analysis: analyzes possible value ranges for program variables (See `lib/Support/RangeAnalysis.cpp`)
 - SMT Solving (See `lib/SMT`)
 - Binary Decision Diagram (BDD): (See `lib/cudd`)
 
@@ -79,6 +80,33 @@ This option is used to print a call graph based on the alias analysis.
 You can use it with -with-labels option, which will add lables (call insts)
 to the edges in call graphs.
 
+## Using the Range Analysis
+
+The Range Analysis feature computes possible value ranges for program variables.
+
+To use Range Analysis, you can either:
+
+### 1. Use it within the Canary tool:
+
+```bash
+./canary -range input.bc      # Intraprocedural analysis
+./canary -range -interproc input.bc  # Interprocedural analysis
+```
+
+### 2. Use the dedicated Range Analysis tool:
+
+```bash
+./ra_test input.bc            # Intraprocedural analysis
+./ra_test -interproc input.bc  # Interprocedural analysis
+```
+
+For LLVM 14 bitcode files, you can use the test script:
+
+```bash
+./test/test_range_analysis.sh ~/Work/bc14  # Path to your LLVM 14 bitcode files
+```
+
+For more details, see the [Range Analysis documentation](doc/RangeAnalysis.md).
 
 ## Using the SMT Solver
 

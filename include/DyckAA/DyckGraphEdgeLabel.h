@@ -61,7 +61,7 @@ public:
         Desc.append("@");
 
         char Temp[1024];
-        sprintf(Temp, "%ld", Bytes);
+        snprintf(Temp, sizeof(Temp), "%ld", Bytes);
         Desc.append(Temp);
     }
 
@@ -81,7 +81,7 @@ public:
         Desc.append("#");
 
         char Temp[1024];
-        sprintf(Temp, "%ld", Idx);
+        snprintf(Temp, sizeof(Temp), "%ld", Idx);
         Desc.append(Temp);
     }
 

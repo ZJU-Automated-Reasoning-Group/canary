@@ -1,4 +1,3 @@
-
 add_library(CanarySupport STATIC
         API.cpp
         CFG.cpp
@@ -8,4 +7,5 @@ add_library(CanarySupport STATIC
         ThreadPool.cpp
         InstructionUtils.cpp
         Debug.cpp
+        log.cpp
 )

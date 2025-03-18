@@ -270,6 +270,8 @@ bool SMTSolver::overApproCheckMisc(
     // This is not a good idea..
     return false;
   }
+  
+  return true;
 }
 
 bool SMTSolver::checkN2NQueryWithOverAppro(

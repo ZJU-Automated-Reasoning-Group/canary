@@ -6,6 +6,7 @@ or their institutions liable under any circumstances.
 */
 
 #include "CSIndex/TCSEstimator.h"
+#include <random>
 
 
 TCSEstimator::TCSEstimator(Graph& g, int k){
@@ -21,7 +22,9 @@ TCSEstimator::TCSEstimator(Graph& g, int k){
 	}
 
 	for(int i=0;i<k;i++){
-		random_shuffle(_index.begin(),_index.end());
+		std::random_device rd;
+		std::mt19937 rng(rd());
+		std::shuffle(_index.begin(),_index.end(), rng);
 		for(int j=0;j<cnt;j++){
 				reverse[_index[j]]=j;
 		}

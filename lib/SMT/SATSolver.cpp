@@ -16,7 +16,7 @@
 #define HALFLIFE 128
 #define _DT 32 // RSAT phase selection threshold
 
-struct comp_scores : public binary_function<unsigned, unsigned, bool> {
+struct comp_scores {
   variable *m_vars;
 
   comp_scores(variable *my_vars) : m_vars(my_vars) {}

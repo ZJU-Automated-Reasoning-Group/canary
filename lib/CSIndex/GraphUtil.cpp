@@ -1,4 +1,5 @@
 #include "CSIndex/GraphUtil.h"
+#include <random>
 
 // depth first search given a start node
 void GraphUtil::dfs(Graph& g, int vid, vector<int>& preorder, vector<int>& postorder, vector<bool>& visited) {
@@ -858,7 +859,9 @@ int GraphUtil::visit(Graph& tree, int vid, int& pre_post,
 					 vector<bool>& visited, vector<pair<int,int> >& dfslabels) {
 	visited[vid] = true;
 	EdgeList el = tree.out_edges(vid);
-	random_shuffle(el.begin(),el.end());
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(el.begin(),el.end(), g);
 	EdgeList::iterator eit;
 	int pre_order = tree.num_vertices()+1;
 	for (eit = el.begin(); eit != el.end(); eit++) {
@@ -886,7 +889,9 @@ void GraphUtil::grail_labeling(Graph& tree, vector<pair<int,int> >& dfslabels) {
 	vector<bool> visited(tree.num_vertices(), false);
 	dfslabels.clear();
 	dfslabels = vector<pair<int,int> >(tree.num_vertices(),pair<int,int>(-1,-1));
-	random_shuffle(roots.begin(),roots.end());
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(roots.begin(),roots.end(), g);
 	for (sit = roots.begin(); sit != roots.end(); sit++) {
 		pre_post++;
 		visit(tree, *sit, pre_post, visited, dfslabels);
