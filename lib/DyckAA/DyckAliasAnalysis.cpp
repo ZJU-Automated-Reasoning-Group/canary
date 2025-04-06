@@ -21,9 +21,9 @@
 #include <cstdio>
 #include <stack>
 
-#include "AAAnalyzer.h"
 #include "DyckAA/DyckAliasAnalysis.h"
 #include "DyckAA/DyckCallGraph.h"
+#include "DyckAA/AAAnalyzer.h"
 #include "Support/RecursiveTimer.h"
 
 static cl::opt<bool> PrintAliasSetInformation("print-alias-set-info", cl::init(false), cl::Hidden,

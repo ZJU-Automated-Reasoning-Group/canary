@@ -18,7 +18,7 @@
 
 #include <llvm/IR/GetElementPtrTypeIterator.h>
 #include <llvm/IR/InstIterator.h>
-#include "AAAnalyzer.h"
+#include "DyckAA/AAAnalyzer.h"
 #include "Support/RecursiveTimer.h"
 
 static cl::opt<unsigned> FunctionTypeCheckLevel("function-type-check-level", cl::init(4), cl::Hidden,
