@@ -12,4 +12,5 @@ add_library(CanarySupport STATIC
         FileUtils.cpp
         MultiThreading.cpp
         Timer.cpp
+        RNG.cpp
 )

@@ -128,6 +128,7 @@ endif()
 add_subdirectory(lib)
 add_subdirectory(tools)
 add_subdirectory(benchmarks)
+add_subdirectory(examples)
 
 if (BUILD_TESTS)
     add_subdirectory(test)

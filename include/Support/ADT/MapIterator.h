@@ -1,3 +1,9 @@
+/*
+* @author: rainoftime
+* @brief: MapIterator is a iterator for map data structure.
+* 一个用于映射数据结构的迭代器实现。它提供了高效的遍历和访问映射中的键和值。
+*/
+
 #ifndef UTILS_MAPITERATOR_H
 #define UTILS_MAPITERATOR_H
 

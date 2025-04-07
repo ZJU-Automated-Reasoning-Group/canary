@@ -1,3 +1,9 @@
+/*
+* @author: rainoftime
+* @brief: OrderedSet is a set data structure that is ordered.
+* 一个有序集合实现，是其他有序容器的基础。它提供了高效的查找、插入和删除操作，同时保持了集合的顺序性。
+*/
+
 #include <vector>
 
 using namespace std;

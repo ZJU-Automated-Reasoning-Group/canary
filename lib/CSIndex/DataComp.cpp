@@ -1,3 +1,7 @@
+/*
+*  DataComp is a data compression algorithm.
+*/
+
 #include "CSIndex/DataComp.h"
 
 DataComp::DataComp(vector<vector<int> > _data):data(_data) {
