@@ -103,6 +103,9 @@ bool ContextSensitiveNullCheckAnalysis::runOnModule(Module &M) {
         }
     }
 
+    // Build the k-limited context map for sound analysis
+    buildKLimitedContextMap();
+
     // Collect and print statistics
     unsigned TotalPtrInsts = 0;
     unsigned NotNullPtrInsts = 0;
@@ -246,34 +249,100 @@ bool ContextSensitiveNullCheckAnalysis::runOnModule(Module &M) {
     return false;
 }
 
-bool ContextSensitiveNullCheckAnalysis::mayNull(Value *Ptr, Instruction *Inst, const Context &Ctx) {
-    // Limit context depth if needed
-    Context LimitedCtx = Ctx;
-    if (LimitedCtx.size() > MaxContextDepth) {
-        LimitedCtx.erase(LimitedCtx.begin(), LimitedCtx.begin() + (LimitedCtx.size() - MaxContextDepth));
+// Get a k-limited context (most recent k call sites)
+Context ContextSensitiveNullCheckAnalysis::getKLimitedContext(const Context &Ctx) const {
+    if (Ctx.size() <= MaxContextDepth) {
+        return Ctx;
     }
     
+    // Get the k most recent call sites (keep the suffix)
+    Context KLimitedCtx;
+    auto startPos = Ctx.size() - MaxContextDepth;
+    KLimitedCtx.insert(KLimitedCtx.end(), Ctx.begin() + startPos, Ctx.end());
+    return KLimitedCtx;
+}
+
+// Build the KLimitedContextMap for sound k-limiting
+void ContextSensitiveNullCheckAnalysis::buildKLimitedContextMap() {
+    // Clear any existing mappings
+    KLimitedContextMap.clear();
+    
+    // Build a map from k-limited contexts to all full contexts that share that k-suffix
+    for (const auto &Entry : AnalysisMap) {
+        const Function* F = Entry.first.first;
+        const Context& FullCtx = Entry.first.second;
+        
+        // Get the k-limited version of this context
+        Context KLimitedCtx = getKLimitedContext(FullCtx);
+        
+        // Add this full context to the set of contexts with the same k-limited version
+        std::pair<Function*, Context> key = {const_cast<Function*>(F), KLimitedCtx};
+        KLimitedContextMap[key].insert(FullCtx);
+    }
+    
+    if (CSVerbose) {
+        errs() << "\nK-Limited Context Mappings (k=" << MaxContextDepth << "):\n";
+        for (const auto &Entry : KLimitedContextMap) {
+            errs() << "  Function: " << Entry.first.first->getName() 
+                  << ", K-Limited Context: " << getContextString(Entry.first.second) << "\n";
+            errs() << "    Maps to " << Entry.second.size() << " full context(s):\n";
+            for (const auto &FullCtx : Entry.second) {
+                errs() << "      " << getContextString(FullCtx) << "\n";
+            }
+        }
+        errs() << "\n";
+    }
+}
+
+// Check if a pointer may be null in any context with the same k-suffix
+bool ContextSensitiveNullCheckAnalysis::mayNullInAnyMatchingContext(Value *Ptr, Instruction *Inst, 
+                                                                   const Context &KLimitedCtx) {
+    // Look up all contexts that share the same k-suffix
+    std::pair<Function*, Context> key = {Inst->getFunction(), KLimitedCtx};
+    auto It = KLimitedContextMap.find(key);
+    if (It == KLimitedContextMap.end() || It->second.empty()) {
+        // No matching contexts found, conservatively return true (may be null)
+        return true;
+    }
+    
+    // Check all contexts that share this k-suffix
+    // For sound analysis: if ANY context says it may be null, then the result is may be null
+    for (const Context &FullCtx : It->second) {
+        auto AnalysisIt = AnalysisMap.find({Inst->getFunction(), FullCtx});
+        if (AnalysisIt == AnalysisMap.end() || !AnalysisIt->second) {
+            // No analysis for this context, conservatively assume may be null
+            return true;
+        }
+        
+        // If this context's analysis says it may be null, then the overall result is may be null
+        if (AnalysisIt->second->mayNull(Ptr, Inst)) {
+            return true;
+        }
+    }
+    
+    // All contexts with the same k-suffix agree that the pointer is NOT_NULL
+    return false;
+}
+
+bool ContextSensitiveNullCheckAnalysis::mayNull(Value *Ptr, Instruction *Inst, const Context &Ctx) {
     // First check if the context-sensitive flow analysis says it's not null in this context
     auto *NFA = &getAnalysis<ContextSensitiveNullFlowAnalysis>();
-    if (NFA->notNull(Ptr, LimitedCtx)) {
+    if (NFA->notNull(Ptr, Ctx)) {
         return false; // If flow analysis proves NOT_NULL in this context, then it's definitely NOT_NULL
     }
     
-    // Try to find the analysis for this function and context
-    auto It = AnalysisMap.find({Inst->getFunction(), LimitedCtx});
-    if (It != AnalysisMap.end() && It->second) {
-        return It->second->mayNull(Ptr, Inst);
+    // Get the k-limited version of this context (last k call sites)
+    Context KLimitedCtx = getKLimitedContext(Ctx);
+    
+    // First, try exact context match if possible
+    std::pair<Function*, Context> exKey = {Inst->getFunction(), Ctx};
+    auto ExactIt = AnalysisMap.find(exKey);
+    if (ExactIt != AnalysisMap.end() && ExactIt->second) {
+        return ExactIt->second->mayNull(Ptr, Inst);
     }
     
-    // If not found with the specific context, try with empty context (context-insensitive fallback)
-    Context EmptyContext;
-    auto EmptyIt = AnalysisMap.find({Inst->getFunction(), EmptyContext});
-    if (EmptyIt != AnalysisMap.end() && EmptyIt->second) {
-        return EmptyIt->second->mayNull(Ptr, Inst);
-    }
-    
-    // Conservative answer: may be null
-    return true;
+    // Otherwise, use sound k-limiting: merge results from all contexts with same k-suffix
+    return mayNullInAnyMatchingContext(Ptr, Inst, KLimitedCtx);
 }
 
 std::string ContextSensitiveNullCheckAnalysis::getContextString(const Context& Ctx) const {

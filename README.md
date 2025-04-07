@@ -11,6 +11,7 @@ We copy these files, as LLVM removed them in the transition from version 14 to 1
 - SMT Solving (See `lib/SMT`)
 - Binary Decision Diagram (BDD): (See `lib/cudd`)
 - kint: a static bug finder.
+- Sea-DSA: a context-sensitive, field-sensitive alias analysis based on Data Structure Analysis. (See `lib/seadsa`)
 
 ## Installation
 
@@ -41,6 +42,8 @@ make -j$(nproc)
 ```
 
 Currently, we asume that the system has the right version of Z3.
+
+The build system will automatically download and build Boost if it's not found on your system. You can specify a custom Boost installation path with `-DCUSTOM_BOOST_ROOT=/path/to/boost`.
 
 TBD: download the LLVM and Z3 obj files automatically...
 
@@ -80,6 +83,15 @@ pointer. We say f1 and f2 are two FuncTy-compatible functions iff.
 This option is used to print a call graph based on the alias analysis.
 You can use it with -with-labels option, which will add lables (call insts)
 to the edges in call graphs.
+
+## Using Sea-DSA
+
+Sea-DSA is a context-sensitive, field-sensitive pointer analysis based on DSA (Data Structure Analysis) for analyzing memory graphs and detecting memory-related issues.
+
+
+### Programmatic Usage 
+
+To use Sea-DSA programmatically, include the necessary headers from the `include/seadsa` directory and link with the `SeaDsaAnalysis` library.
 
 ## Using Kint
 

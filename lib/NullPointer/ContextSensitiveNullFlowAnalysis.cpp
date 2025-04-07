@@ -155,7 +155,6 @@ bool ContextSensitiveNullFlowAnalysis::notNull(Value *Ptr, Context Ctx) const {
     }
     
     // Then check our context-sensitive analysis results
-    // This depends on how you track non-null values in your analysis
     Function *F = nullptr;
     Instruction *InstPoint = nullptr;
     if (auto *I = dyn_cast<Instruction>(Ptr)) {
@@ -166,33 +165,62 @@ bool ContextSensitiveNullFlowAnalysis::notNull(Value *Ptr, Context Ctx) const {
         return false;
     }
     
-    // Look through the contexts from most specific to most general
-    while (!Ctx.empty()) {
-        auto FuncCtxPair = std::make_pair(F, Ctx);
-        auto it = NewNonNullEdges.find(FuncCtxPair);
-        if (it != NewNonNullEdges.end()) {
-            // Check if this pointer is marked as non-null in this context
-            // This depends on how you track non-null values in your analysis
-            // For now, we'll just check with the alias analysis adapter
-            if (InstPoint && !AAA->mayNull(Ptr, InstPoint))
-                return true;
+    // Get all contexts that have the same k-suffix as our input context
+    std::set<Context> MatchingContexts;
+    
+    // Start with the exact context
+    MatchingContexts.insert(Ctx);
+    
+    // Get the k-suffix of our context
+    Context KSuffix = Ctx;
+    if (KSuffix.size() > MaxContextDepth) {
+        KSuffix.erase(KSuffix.begin(), KSuffix.begin() + (KSuffix.size() - MaxContextDepth));
+    }
+    
+    // Add all contexts that have the same k-suffix
+    for (const auto &Entry : NewNonNullEdges) {
+        if (Entry.first.first != F) continue;
+        
+        const Context &OtherCtx = Entry.first.second;
+        Context OtherKSuffix = OtherCtx;
+        
+        if (OtherKSuffix.size() > MaxContextDepth) {
+            OtherKSuffix.erase(OtherKSuffix.begin(), OtherKSuffix.begin() + (OtherKSuffix.size() - MaxContextDepth));
         }
         
-        // Try a more general context
-        Ctx.pop_back();
+        // If this context has the same k-suffix, add it to our matching contexts
+        if (OtherKSuffix == KSuffix) {
+            MatchingContexts.insert(OtherCtx);
+        }
     }
     
-    // Check with the empty context
-    Context EmptyCtx;
-    auto FuncCtxPair = std::make_pair(F, EmptyCtx);
-    auto it = NewNonNullEdges.find(FuncCtxPair);
-    if (it != NewNonNullEdges.end()) {
-        // Check if this pointer is marked as non-null in the empty context
-        if (InstPoint && !AAA->mayNull(Ptr, InstPoint))
-            return true;
+    // For a value to be definitely NOT NULL, it must be NOT NULL in ALL matching contexts
+    // This is the sound approach for k-limiting
+    for (const Context &MatchingCtx : MatchingContexts) {
+        auto FuncCtxPair = std::make_pair(F, MatchingCtx);
+        auto it = NewNonNullEdges.find(FuncCtxPair);
+        
+        if (it == NewNonNullEdges.end()) {
+            // If we don't have analysis for this context, we can't guarantee NOT_NULL
+            return false;
+        }
+        
+        // Check if this pointer is NOT NULL in this context
+        bool IsNotNullInContext = false;
+        
+        // For a proper implementation, this would check specific null checks in the context
+        if (InstPoint && !AAA->mayNull(Ptr, InstPoint)) {
+            IsNotNullInContext = true;
+        }
+        
+        if (!IsNotNullInContext) {
+            // If it's not definitely NOT NULL in any matching context, we can't guarantee NOT_NULL
+            return false;
+        }
     }
     
-    return false;
+    // If we get here, the pointer is NOT NULL in all matching contexts
+    return true;
 }
 
 void ContextSensitiveNullFlowAnalysis::add(Function *F, Context Ctx, Value *V1, Value *V2) {
@@ -255,10 +283,7 @@ Context ContextSensitiveNullFlowAnalysis::extendContext(const Context& Ctx, Call
     Context NewCtx = Ctx;
     NewCtx.push_back(CI);
     
-    // Limit context depth
-    if (NewCtx.size() > MaxContextDepth) {
-        NewCtx.erase(NewCtx.begin(), NewCtx.begin() + (NewCtx.size() - MaxContextDepth));
-    }
-    
+    // Note: We don't limit the context here anymore - we'll handle k-limiting
+    // at analysis time to ensure soundness by properly merging results
     return NewCtx;
 } 

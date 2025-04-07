@@ -101,23 +101,3 @@ llvm_map_components_to_libnames(LLVM_LINK_COMPONENTS
   Vectorize
   ipo
 )
-
-# Add alias analysis comparison tool
-add_executable(alias_analysis alias_analysis.cpp)
-
-# Add the alias_analysis executable
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    target_link_libraries(alias_analysis PRIVATE
-           CanaryDyckAA CFLAA CanarySupport
-            -Wl,--start-group
-            ${LLVM_LINK_COMPONENTS}
-            -Wl,--end-group
-            pthread dl
-    )
-else()
-    target_link_libraries(alias_analysis PRIVATE
-           CanaryDyckAA CFLAA CanarySupport
-            ${LLVM_LINK_COMPONENTS}
-            pthread dl
-    )
-endif()

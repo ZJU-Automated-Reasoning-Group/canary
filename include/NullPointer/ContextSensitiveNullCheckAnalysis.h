@@ -26,6 +26,9 @@ private:
     
     // Maximum context depth to consider (to prevent context explosion)
     unsigned MaxContextDepth;
+    
+    // Maps a function and k-limited context to all contexts that share the same k suffix
+    std::map<std::pair<Function*, Context>, std::set<Context>> KLimitedContextMap;
 
 public:
     static char ID;
@@ -43,6 +46,15 @@ public:
     
     /// Helper method to get a context string for debugging
     std::string getContextString(const Context& Ctx) const;
+    
+    /// Get a k-limited context (most recent k call sites)
+    Context getKLimitedContext(const Context &Ctx) const;
+    
+    /// Build the KLimitedContextMap for sound k-limiting
+    void buildKLimitedContextMap();
+    
+    /// Check if a pointer may be null in any context with the same k-suffix
+    bool mayNullInAnyMatchingContext(Value *Ptr, Instruction *Inst, const Context &KLimitedCtx);
 };
 
 #endif // NULLPOINTER_CONTEXTSENSITIVENULLCHECKANALYSIS_H

@@ -6,6 +6,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Option for sea-dsa sanity checks
+option(ENABLE_SANITY_CHECKS "Enable sea-dsa sanity checks." OFF)
+if(ENABLE_SANITY_CHECKS)
+  message(STATUS "Compiling sea-dsa with sanity checks")
+  set(SANITY_CHECKS TRUE)
+else()
+  message(STATUS "Compiling sea-dsa without sanity checks")
+endif()
+
 # Check for LLVM build path
 if (NOT LLVM_BUILD_PATH)
     message(FATAL_ERROR "Please specify the build folder of LLVM using -DLLVM_BUILD_PATH=")
@@ -71,6 +80,49 @@ message(STATUS "Found Z3: ${Z3_LIBRARIES}")
 message(STATUS "Z3 include dir: ${Z3_INCLUDES}")
 
 include_directories(${Z3_INCLUDES})
+
+# Handle Boost dependencies for sea-dsa
+option(DOWNLOAD_BOOST "Download and build Boost if not found" ON)
+set(CUSTOM_BOOST_ROOT "" CACHE PATH "Path to custom boost installation.")
+
+if(CUSTOM_BOOST_ROOT)
+    set(BOOST_ROOT ${CUSTOM_BOOST_ROOT})
+    set(Boost_NO_SYSTEM_PATHS "ON")
+endif()
+
+find_package(Boost 1.65)
+if(NOT Boost_FOUND AND DOWNLOAD_BOOST)
+    include(ExternalProject)
+    set(BOOST_INSTALL_DIR ${CMAKE_BINARY_DIR}/deps/boost)
+    message(STATUS "Boost not found, will download and build it in ${BOOST_INSTALL_DIR}")
+    
+    ExternalProject_Add(
+        boost
+        URL https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz
+        URL_HASH SHA256=6478edfe2f3305127cffe8caf73ea0176c53769f4bf1585be237eb30798c3b8e
+        PREFIX ${CMAKE_BINARY_DIR}/deps
+        CONFIGURE_COMMAND ./bootstrap.sh --prefix=${BOOST_INSTALL_DIR}
+        BUILD_COMMAND ./b2 --with-system --with-graph install
+        BUILD_IN_SOURCE 1
+        INSTALL_COMMAND ""
+        INSTALL_DIR ${BOOST_INSTALL_DIR}
+    )
+    
+    set(BOOST_ROOT ${BOOST_INSTALL_DIR})
+    set(BOOST_INCLUDEDIR ${BOOST_INSTALL_DIR}/include)
+    set(BOOST_LIBRARYDIR ${BOOST_INSTALL_DIR}/lib)
+    include_directories(${BOOST_INCLUDEDIR})
+else()
+    if(Boost_FOUND)
+        message(STATUS "Found Boost: ${Boost_INCLUDE_DIRS}")
+        include_directories(${Boost_INCLUDE_DIRS})
+        if(NOT LLVM_ENABLE_EH)
+            add_definitions(-DBOOST_NO_EXCEPTIONS)
+        endif()
+    else()
+        message(FATAL_ERROR "Boost not found and DOWNLOAD_BOOST=OFF. Please provide a valid CUSTOM_BOOST_ROOT or set DOWNLOAD_BOOST=ON.")
+    endif()
+endif()
 
 # Add subdirectories
 add_subdirectory(lib)
