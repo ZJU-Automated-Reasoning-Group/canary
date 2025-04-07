@@ -1,0 +1,17 @@
+=== Alias Analysis Comparison ===
+Total Pointer Pairs: 318884
+
+DyckAA:
+  Aliased Pairs: 252837
+  Alias Percentage: 79.29%
+  Analysis Time: 0.07s
+
+CFL-Anders:
+  Aliased Pairs: 312470
+  Alias Percentage: 97.99%
+  Analysis Time: 0.20s
+
+CFL-Steens:
+  Aliased Pairs: 312862
+  Alias Percentage: 98.11%
+  Analysis Time: 0.17s

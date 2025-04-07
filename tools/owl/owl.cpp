@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "SMT/SMTSolver.h"
-#include "SMT/SMTFactory.h"
-#include "SMT/CNF.h"
-#include "SMT/SATSolver.h"
+#include "Solvers/SMT/SMTSolver.h"
+#include "Solvers/SMT/SMTFactory.h"
+#include "Solvers/SMT/CNF.h"
+#include "Solvers/SMT/SATSolver.h"
 
 #ifdef _MSC_VER
 #include <ctime>

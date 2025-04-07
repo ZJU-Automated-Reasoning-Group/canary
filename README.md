@@ -8,8 +8,8 @@ The current version of Canary has been tested on x86 Linux and ARM Mac using LLV
 - DyckAA: a unification-based, exhuastive alias analysis (See `lib/DyckAA`)
 - CFLAA: All files inthe subfolder are 1:1 copied from LLVM 14.0.6 and are subject to the LLVM license.
 We copy these files, as LLVM removed them in the transition from version 14 to 15
-- SMT Solving (See `lib/SMT`)
-- Binary Decision Diagram (BDD): (See `lib/cudd`)
+- SMT Solving (See `lib/Solvers/SMT`)
+- Binary Decision Diagram (BDD): (See `lib/Solvers/CUDD`)
 - kint: a static bug finder.
 - Sea-DSA: a context-sensitive, field-sensitive alias analysis based on Data Structure Analysis. (See `lib/seadsa`)
 
@@ -118,7 +118,7 @@ Key options include:
 
 ### Programmatic Usage 
 
-To use Sea-DSA programmatically, include the necessary headers from the `include/seadsa` directory and link with the `SeaDsaAnalysis` library.
+To use Sea-DSA programmatically, include the necessary headers from the `include/Alias/seadsa` directory and link with the `SeaDsaAnalysis` library.
 
 ## Using Kint
 

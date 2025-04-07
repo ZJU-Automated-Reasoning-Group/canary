@@ -18,7 +18,7 @@
 #include <unordered_map>
 #include <string>
 
-#include "DyckAA/DyckVFG.h"
+#include "Alias/DyckAA/DyckVFG.h"
 #include "NullPointer/AliasAnalysisAdapter.h"
 
 using namespace llvm;

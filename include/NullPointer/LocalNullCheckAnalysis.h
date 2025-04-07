@@ -26,7 +26,7 @@
 #include <set>
 #include <unordered_map>
 
-#include "DyckAA/DyckValueFlowAnalysis.h"
+#include "Alias/DyckAA/DyckValueFlowAnalysis.h"
 #include "NullPointer/NullEquivalenceAnalysis.h"
 #include "NullPointer/NullFlowAnalysis.h"
 

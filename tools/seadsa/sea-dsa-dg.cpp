@@ -17,15 +17,15 @@
 #include "llvm/PassRegistry.h"
 #include "llvm/InitializePasses.h"
 
-#include "seadsa/DsaAnalysis.hh"
-#include "seadsa/DsaPrinter.hh"
-#include "seadsa/Global.hh"
-#include "seadsa/InitializePasses.hh"
+#include "Alias/seadsa/DsaAnalysis.hh"
+#include "Alias/seadsa/DsaPrinter.hh"
+#include "Alias/seadsa/Global.hh"
+#include "Alias/seadsa/InitializePasses.hh"
 
 // Add these includes for proper registration
-#include "seadsa/support/RemovePtrToInt.hh"
-#include "seadsa/AllocWrapInfo.hh"
-#include "seadsa/DsaLibFuncInfo.hh"
+#include "Alias/seadsa/support/RemovePtrToInt.hh"
+#include "Alias/seadsa/AllocWrapInfo.hh"
+#include "Alias/seadsa/DsaLibFuncInfo.hh"
 
 static llvm::cl::opt<std::string>
     InputFilename(llvm::cl::Positional,

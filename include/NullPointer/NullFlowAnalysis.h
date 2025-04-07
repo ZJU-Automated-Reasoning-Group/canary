@@ -23,8 +23,8 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Debug.h>
-#include "DyckAA/DyckVFG.h"
-#include "DyckAA/DyckAliasAnalysis.h"
+#include "Alias/DyckAA/DyckVFG.h"
+#include "Alias/DyckAA/DyckAliasAnalysis.h"
 
 using namespace llvm;
 

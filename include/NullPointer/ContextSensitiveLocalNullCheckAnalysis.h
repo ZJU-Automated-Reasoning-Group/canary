@@ -15,7 +15,7 @@
 #include <unordered_map>
 #include <map>
 
-#include "DyckAA/DyckValueFlowAnalysis.h"
+#include "Alias/DyckAA/DyckValueFlowAnalysis.h"
 #include "NullPointer/NullEquivalenceAnalysis.h"
 #include "NullPointer/ContextSensitiveNullFlowAnalysis.h"
 

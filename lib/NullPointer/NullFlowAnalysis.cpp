@@ -17,8 +17,8 @@
  */
 
 #include <llvm/IR/InstIterator.h>
-#include "DyckAA/DyckAliasAnalysis.h"
-#include "DyckAA/DyckValueFlowAnalysis.h"
+#include "Alias/DyckAA/DyckAliasAnalysis.h"
+#include "Alias/DyckAA/DyckValueFlowAnalysis.h"
 #include "NullPointer/NullFlowAnalysis.h"
 #include "Support/API.h"
 #include "Support/RecursiveTimer.h"

@@ -9,7 +9,7 @@
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/raw_ostream.h>
-#include "DyckAA/DyckValueFlowAnalysis.h"
+#include "Alias/DyckAA/DyckValueFlowAnalysis.h"
 #include "NullPointer/ContextSensitiveNullFlowAnalysis.h"
 #include "NullPointer/AliasAnalysisAdapter.h"
 #include "Support/API.h"
