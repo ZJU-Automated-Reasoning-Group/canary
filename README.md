@@ -88,6 +88,33 @@ to the edges in call graphs.
 
 Sea-DSA is a context-sensitive, field-sensitive pointer analysis based on DSA (Data Structure Analysis) for analyzing memory graphs and detecting memory-related issues.
 
+The Sea-DSA library is integrated into Canary, and the command-line tools are now available.
+
+### Command-line Tools
+
+#### seadsa-dg
+
+The `seadsa-dg` tool is a simple tool for generating memory graphs:
+
+```
+seadsa-dg [options] <input LLVM bitcode file>
+```
+
+Options:
+- `--sea-dsa-dot`: Generate DOT files visualizing the memory graphs
+
+#### seadsa-tool
+
+The `seadsa-tool` is an advanced tool with more features for memory analysis:
+
+```
+seadsa-tool [options] <input LLVM bitcode file>
+```
+
+Key options include:
+- `--sea-dsa-dot`: Generate DOT files visualizing memory graphs
+- `--sea-dsa-callgraph-dot`: Generate DOT files of the complete call graph (currently disabled in this version)
+- `--outdir <DIR>`: Specify an output directory for generated files
 
 ### Programmatic Usage 
 
