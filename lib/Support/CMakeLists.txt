@@ -8,4 +8,8 @@ add_library(CanarySupport STATIC
         InstructionUtils.cpp
         Debug.cpp
         log.cpp
+        StringUtils.cpp
+        FileUtils.cpp
+        MultiThreading.cpp
+        Timer.cpp
 )
