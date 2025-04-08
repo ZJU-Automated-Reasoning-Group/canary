@@ -1,7 +1,7 @@
 # Canary
 
 
-Canary is a program analysis and verification framework. It provides severl toolkits that can be used
+Canary is a program analysis, verification, and optimization framework. It provides severl toolkits that can be used
 individully or in combination to perform different tasks.
 The current version of Canary has been tested on x86 Linux and ARM Mac using LLVM-12 and LLVM-14 with Z3-4.11.
 
@@ -131,4 +131,8 @@ To use Sea-DSA programmatically, include the necessary headers from the `include
 ~~~~
 
 
+## Related 
 
+- https://github.com/seclab-ucr/SUTURE
+- https://github.com/dtcxzyw/llvm-opt-benchmark
+- https://github.com/gpoesia/eos
