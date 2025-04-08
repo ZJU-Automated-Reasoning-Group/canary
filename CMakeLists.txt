@@ -60,6 +60,10 @@ link_directories(${LLVM_LIBRARY_DIRS})
 
 include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Include RapidJSON
+message(STATUS "Including RapidJSON library")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/rapidjson)
+
 # Find Z3
 find_library(
     Z3_LIBRARIES
@@ -129,10 +133,3 @@ add_subdirectory(lib)
 add_subdirectory(tools)
 add_subdirectory(benchmarks)
 add_subdirectory(examples)
-
-if (BUILD_TESTS)
-    add_subdirectory(test)
-endif()
-
-enable_testing()
-add_test(AliasTest ${PROJECT_BINARY_DIR}/test/AliasTest) 

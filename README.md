@@ -12,6 +12,7 @@ We copy these files, as LLVM removed them in the transition from version 14 to 1
 - Binary Decision Diagram (BDD): (See `lib/Solvers/CUDD`)
 - kint: a static bug finder.
 - Sea-DSA: a context-sensitive, field-sensitive alias analysis based on Data Structure Analysis. (See `lib/seadsa`)
+- RapidJSON: A fast JSON parser/generator for C++ with both SAX/DOM style API. (See `include/rapidjson`)
 
 ## Installation
 
