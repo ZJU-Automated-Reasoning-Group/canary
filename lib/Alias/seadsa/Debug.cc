@@ -1,4 +1,4 @@
-#include <Alias/seadsa/support/Debug.h>
+#include "Alias/seadsa/support/Debug.h"
 
 std::set<std::string> seadsa::SeaDsaLog;
 

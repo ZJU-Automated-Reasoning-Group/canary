@@ -1,19 +1,18 @@
+#include <llvm/ADT/SCCIterator.h>
+#include <llvm/ADT/STLExtras.h>
+#include <llvm/Analysis/CallGraph.h>
+#include <llvm/Analysis/TargetLibraryInfo.h>
+#include <llvm/IR/DataLayout.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/InstIterator.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/PassManager.h>
+#include <llvm/Pass.h>
+#include <llvm/Support/CommandLine.h>
+#include <llvm/Support/raw_ostream.h>
+
 #include "Alias/seadsa/BottomUp.hh"
-
-#include "llvm/ADT/SCCIterator.h"
-#include "llvm/ADT/STLExtras.h"
-#include "llvm/Analysis/CallGraph.h"
-#include "llvm/Analysis/TargetLibraryInfo.h"
-#include "llvm/IR/DataLayout.h"
-#include "llvm/IR/Function.h"
-#include "llvm/IR/InstIterator.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/PassManager.h"
-#include "llvm/Pass.h"
-#include "llvm/Support/CommandLine.h"
-#include "llvm/Support/raw_ostream.h"
-
 #include "Alias/seadsa/AllocWrapInfo.hh"
 #include "Alias/seadsa/CallGraphUtils.hh"
 #include "Alias/seadsa/CallSite.hh"

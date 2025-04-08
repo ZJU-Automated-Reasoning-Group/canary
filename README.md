@@ -134,6 +134,8 @@ To use Sea-DSA programmatically, include the necessary headers from the `include
 
 ## Related 
 
+- https://github.com/grievejia/tpa
+- https://github.com/grievejia/andersen
 - https://github.com/seclab-ucr/SUTURE
 - https://github.com/dtcxzyw/llvm-opt-benchmark
 - https://github.com/gpoesia/eos

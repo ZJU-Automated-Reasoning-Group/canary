@@ -1,8 +1,10 @@
+#include <llvm/IR/Instructions.h>
+#include <llvm/Support/CommandLine.h>
+
 #include "Alias/seadsa/Cloner.hh"
 #include "Alias/seadsa/CallSite.hh"
 #include "Alias/seadsa/support/Debug.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/Support/CommandLine.h"
+
 using namespace seadsa;
 
 static llvm::cl::opt<bool> NoAllocSiteOpt(

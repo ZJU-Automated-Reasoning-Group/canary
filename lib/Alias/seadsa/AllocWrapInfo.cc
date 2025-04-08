@@ -1,15 +1,16 @@
+#include <llvm/Analysis/LoopInfo.h>
+#include <llvm/Analysis/MemoryBuiltins.h>
+#include <llvm/Analysis/TargetLibraryInfo.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Value.h>
+#include <llvm/Support/CommandLine.h>
+#include <vector>
+
 #include "Alias/seadsa/AllocWrapInfo.hh"
 #include "Alias/seadsa/InitializePasses.hh"
   
-#include "llvm/Analysis/LoopInfo.h"
-#include "llvm/Analysis/MemoryBuiltins.h"
-#include "llvm/Analysis/TargetLibraryInfo.h"
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Function.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/Value.h"
-#include "llvm/Support/CommandLine.h"
-#include <vector>
 
 using namespace seadsa;
 using namespace llvm;

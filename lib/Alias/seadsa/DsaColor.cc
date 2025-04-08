@@ -1,9 +1,8 @@
+#include <llvm/IR/Argument.h>
+#include <llvm/IR/Function.h>
+
 #include "Alias/seadsa/DsaColor.hh"
-
 #include "Alias/seadsa/Graph.hh"
-#include "llvm/IR/Argument.h"
-#include "llvm/IR/Function.h"
-
 #include "Alias/seadsa/Mapper.hh"
 
 using namespace seadsa;
