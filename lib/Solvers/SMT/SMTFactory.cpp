@@ -363,4 +363,4 @@ SMTExpr SMTFactory::createIntDomainConstantArray(SMTExpr &ElmtExpr) {
 
 SMTExpr SMTFactory::createBoolVal(bool B) {
   return SMTExpr(this, Ctx.bool_val(B));
-}
+} 

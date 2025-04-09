@@ -136,4 +136,4 @@ private:
   bool visit(SMTExpr &, std::unordered_map<std::string, SMTExpr> &,
              SMTExprVec &, std::map<SMTExpr, bool, SMTExprComparator> &,
              SMTRenamingAdvisor *);
-};
+}; 

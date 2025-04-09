@@ -7,5 +7,5 @@ public:
   // static std::string Tactic;
 
 public:
-  static void init(int Timeout);
-};
+  static void init(int T);
+}; 

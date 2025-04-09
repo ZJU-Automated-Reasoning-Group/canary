@@ -23,6 +23,9 @@ cl::opt<bool> EnableLCD("enable-lcd",
 
 namespace {
 
+// Define CCG (Copy Constraint Graph) type for use in collapseNodes
+using CCG = SparseBitVectorGraph;
+
 // This class represent the constraint graph
 class ConstraintGraphNode {
 private:
@@ -193,8 +196,10 @@ public:
 
 namespace {
 
+// Template version of collapseNodes function to support different PtsSet types
+template<typename PtsSetType>
 void collapseNodes(NodeIndex dst, NodeIndex src, AndersNodeFactory &nodeFactory,
-                   std::map<NodeIndex, AndersPtsSet> &ptsGraph,
+                   std::map<NodeIndex, PtsSetType> &ptsGraph,
                    ConstraintGraph &constraintGraph) {
   if (dst == src)
     return;
@@ -208,6 +213,42 @@ void collapseNodes(NodeIndex dst, NodeIndex src, AndersNodeFactory &nodeFactory,
   // We don't need the node cycleIdx any more
   ptsGraph.erase(src);
   constraintGraph.deleteNode(src);
+}
+
+// Backward compatibility for the original version
+void collapseNodes(NodeIndex dst, NodeIndex src, AndersNodeFactory &nodeFactory,
+                   std::map<NodeIndex, AndersPtsSet> &ptsGraph,
+                   ConstraintGraph &constraintGraph) {
+  collapseNodes<AndersPtsSet>(dst, src, nodeFactory, ptsGraph, constraintGraph);
+}
+
+// Add overload for DefaultPtsSet
+void collapseNodes(NodeIndex dst, NodeIndex src, AndersNodeFactory &nodeFactory,
+                   std::map<NodeIndex, DefaultPtsSet> &ptsGraph,
+                   ConstraintGraph &constraintGraph) {
+  collapseNodes<DefaultPtsSet>(dst, src, nodeFactory, ptsGraph, constraintGraph);
+}
+
+// Template versions with CCG parameter
+template<typename PtsSetType>
+void collapseNodes(NodeIndex dst, NodeIndex src, AndersNodeFactory &nodeFactory,
+                   std::map<NodeIndex, PtsSetType> &ptsGraph,
+                   ConstraintGraph &constraintGraph, CCG &copyGraph) {
+  collapseNodes<PtsSetType>(dst, src, nodeFactory, ptsGraph, constraintGraph);
+}
+
+// Backward compatibility for the original version with CCG parameter
+void collapseNodes(NodeIndex dst, NodeIndex src, AndersNodeFactory &nodeFactory,
+                   std::map<NodeIndex, AndersPtsSet> &ptsGraph,
+                   ConstraintGraph &constraintGraph, CCG &copyGraph) {
+  collapseNodes<AndersPtsSet>(dst, src, nodeFactory, ptsGraph, constraintGraph);
+}
+
+// Add overload for DefaultPtsSet with CCG parameter
+void collapseNodes(NodeIndex dst, NodeIndex src, AndersNodeFactory &nodeFactory,
+                   std::map<NodeIndex, DefaultPtsSet> &ptsGraph,
+                   ConstraintGraph &constraintGraph, CCG &copyGraph) {
+  collapseNodes<DefaultPtsSet>(dst, src, nodeFactory, ptsGraph, constraintGraph);
 }
 
 // The worklist for our analysis
@@ -357,10 +398,12 @@ public:
   }
 };
 
+// Template version of buildConstraintGraph function to support different PtsSet types
+template<typename PtsSetType>
 void buildConstraintGraph(ConstraintGraph &cGraph,
                           const std::vector<AndersConstraint> &constraints,
                           AndersNodeFactory &nodeFactory,
-                          std::map<NodeIndex, AndersPtsSet> &ptsGraph) {
+                          std::map<NodeIndex, PtsSetType> &ptsGraph) {
   for (auto const &c : constraints) {
     NodeIndex srcTgt = nodeFactory.getMergeTarget(c.getSrc());
     NodeIndex dstTgt = nodeFactory.getMergeTarget(c.getDest());
@@ -388,16 +431,35 @@ void buildConstraintGraph(ConstraintGraph &cGraph,
   }
 }
 
-class OnlineCycleDetector : public CycleDetector<ConstraintGraph> {
+// Backward compatibility for the original version
+void buildConstraintGraph(ConstraintGraph &cGraph,
+                          const std::vector<AndersConstraint> &constraints,
+                          AndersNodeFactory &nodeFactory,
+                          std::map<NodeIndex, AndersPtsSet> &ptsGraph) {
+  buildConstraintGraph<AndersPtsSet>(cGraph, constraints, nodeFactory, ptsGraph);
+}
+
+// Add overload for DefaultPtsSet
+void buildConstraintGraph(ConstraintGraph &cGraph,
+                          const std::vector<AndersConstraint> &constraints,
+                          AndersNodeFactory &nodeFactory,
+                          std::map<NodeIndex, DefaultPtsSet> &ptsGraph) {
+  buildConstraintGraph<DefaultPtsSet>(cGraph, constraints, nodeFactory, ptsGraph);
+}
+
+// Template version of OnlineCycleDetector class
+template<typename PtsSetType>
+class OnlineCycleDetectorT : public CycleDetector<ConstraintGraph> {
 private:
   AndersNodeFactory &nodeFactory;
   ConstraintGraph &constraintGraph;
-  std::map<NodeIndex, AndersPtsSet> &ptsGraph;
-  const DenseSet<NodeIndex> &candidates;
+  std::map<NodeIndex, PtsSetType> &ptsGraph;
+  std::queue<std::pair<NodeIndex, NodeIndex>> &cycleCandidates;
 
   NodeType *getRep(NodeIndex idx) override {
     return constraintGraph.getOrInsertNode(nodeFactory.getMergeTarget(idx));
   }
+  
   // Specify how to process the non-rep nodes if a cycle is found
   void processNodeOnCycle(const NodeType *node,
                           const NodeType *repNode) override {
@@ -408,23 +470,37 @@ private:
 
     collapseNodes(repIdx, cycleIdx, nodeFactory, ptsGraph, constraintGraph);
   }
+  
   // Specify how to process the rep nodes if a cycle is found
   void processCycleRepNode(const NodeType *node) override {
     // Do nothing, I guess?
   }
 
 public:
-  OnlineCycleDetector(AndersNodeFactory &n, ConstraintGraph &co,
-                      std::map<NodeIndex, AndersPtsSet> &p,
-                      const DenseSet<NodeIndex> &ca)
-      : nodeFactory(n), constraintGraph(co), ptsGraph(p), candidates(ca) {}
+  OnlineCycleDetectorT(AndersNodeFactory &n, ConstraintGraph &co,
+                      std::map<NodeIndex, PtsSetType> &p,
+                      std::queue<std::pair<NodeIndex, NodeIndex>> &cc)
+      : nodeFactory(n), constraintGraph(co), ptsGraph(p), cycleCandidates(cc) {}
 
   void run() override {
     // Perform cycle detection on for nodes on the candidate list
-    for (auto node : candidates)
-      runOnNode(node);
+    std::queue<std::pair<NodeIndex, NodeIndex>> tempCandidates = cycleCandidates;
+    while (!tempCandidates.empty()) {
+      auto candidate = tempCandidates.front();
+      tempCandidates.pop();
+      runOnNode(candidate.first);
+    }
   }
 };
+
+// Backward compatibility for the original version
+class OnlineCycleDetector : public OnlineCycleDetectorT<AndersPtsSet> {
+public:
+  using OnlineCycleDetectorT<AndersPtsSet>::OnlineCycleDetectorT;
+};
+
+// Add specialized version for DefaultPtsSet
+using DefaultOnlineCycleDetector = OnlineCycleDetectorT<DefaultPtsSet>;
 
 } // end of anonymous namespace
 
@@ -461,7 +537,7 @@ void Andersen::solveConstraints() {
   // The "current" and the "next" work list
   AndersWorkList *currWorkList = &workList1, *nextWorkList = &workList2;
   // The set of nodes that LCD believes might be on a cycle
-  DenseSet<NodeIndex> cycleCandidates;
+  std::queue<std::pair<NodeIndex, NodeIndex>> cycleCandidates;
   // The set of edges that LCD believes not on a cycle
   DenseSet<std::pair<NodeIndex, NodeIndex>> checkedEdges;
 
@@ -481,10 +557,14 @@ void Andersen::solveConstraints() {
     // iteration. If there is, detect and collapse cycle
     if (EnableLCD && !cycleCandidates.empty()) {
       // Detect and collapse cycles online
-      OnlineCycleDetector cycleDetector(nodeFactory, constraintGraph, ptsGraph,
-                                        cycleCandidates);
+      DefaultOnlineCycleDetector cycleDetector(nodeFactory, constraintGraph, ptsGraph,
+                                      cycleCandidates);
       cycleDetector.run();
-      cycleCandidates.clear();
+      
+      // Empty the queue
+      while (!cycleCandidates.empty()) {
+        cycleCandidates.pop();
+      }
     }
 
     while (!currWorkList->isEmpty()) {
@@ -500,7 +580,7 @@ void Andersen::solveConstraints() {
       if (ptsItr != ptsGraph.end()) {
         // Check indirect constraints and add copy edge to the constraint graph
         // if necessary
-        const AndersPtsSet &ptsSet = ptsItr->second;
+        const auto &ptsSet = ptsItr->second;
 
         // This is where we perform HCD: check if node has a collapse target,
         // and if it does, merge them immediately
@@ -586,7 +666,7 @@ void Andersen::solveConstraints() {
           NodeIndex tgtNode = nodeFactory.getMergeTarget(dst);
           if (node == tgtNode)
             continue;
-          AndersPtsSet &tgtPtsSet = ptsGraph[tgtNode];
+          auto &tgtPtsSet = ptsGraph[tgtNode];
 
           // errs() << "pts[" << tgtNode << "] |= pts[" << node << "]\n";
           bool isChanged = tgtPtsSet.unionWith(ptsSet);
@@ -601,7 +681,7 @@ void Andersen::solveConstraints() {
             auto edgePair = std::make_pair(node, tgtNode);
             if (!checkedEdges.count(edgePair) && ptsSet == tgtPtsSet) {
               checkedEdges.insert(edgePair);
-              cycleCandidates.insert(tgtNode);
+              cycleCandidates.push(edgePair);
             }
           }
 

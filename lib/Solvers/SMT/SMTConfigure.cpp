@@ -9,4 +9,4 @@ void SMTConfigure::init(int T) {
   if (T != -1 && SolverTimetout == 0) {
     Timeout = T;
   }
-}
+} 

@@ -6,14 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Option for sea-dsa sanity checks
-option(ENABLE_SANITY_CHECKS "Enable sea-dsa sanity checks." OFF)
-if(ENABLE_SANITY_CHECKS)
-  message(STATUS "Compiling sea-dsa with sanity checks")
-  set(SANITY_CHECKS TRUE)
-else()
-  message(STATUS "Compiling sea-dsa without sanity checks")
-endif()
 
 # Check for LLVM build path
 if (NOT LLVM_BUILD_PATH)
@@ -127,6 +119,16 @@ else()
         message(FATAL_ERROR "Boost not found and DOWNLOAD_BOOST=OFF. Please provide a valid CUSTOM_BOOST_ROOT or set DOWNLOAD_BOOST=ON.")
     endif()
 endif()
+
+# Option for sea-dsa sanity checks
+option(ENABLE_SANITY_CHECKS "Enable sea-dsa sanity checks." OFF)
+if(ENABLE_SANITY_CHECKS)
+  message(STATUS "Compiling sea-dsa with sanity checks")
+  set(SANITY_CHECKS TRUE)
+else()
+  message(STATUS "Compiling sea-dsa without sanity checks")
+endif()
+
 
 # Add subdirectories
 add_subdirectory(lib)
