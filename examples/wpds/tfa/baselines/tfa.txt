@@ -1,0 +1,24 @@
+
+--- Searching for (p,g,accept) --- 
+p --- g ---> accept		F
+
+--- Searching for (p,*,*) --- 
+0)	p --- g ---> accept		F
+1)	p --- g ---> q		F3
+********************* F **********************
+CA
+  initial_state: 
+  F    : { }
+	0) p --- g ---> accept		F
+	1) p --- g ---> q		F3
+	2) pp --- g ---> accept		F1
+	3) q --- gg ---> accept		F2
+
+CA
+  initial_state: 
+  F    : { }
+	0) p --- g ---> accept		F
+	1) p --- g ---> q		F3
+	2) pp --- g ---> accept		F1
+	3) q --- gg ---> accept		F2
+

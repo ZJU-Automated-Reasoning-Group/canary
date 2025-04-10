@@ -1,5 +1,6 @@
 add_subdirectory(SMT)
 add_subdirectory(CUDD)
+add_subdirectory(WPDS)
 # Add BDD wrapper
 
 add_library(BDD STATIC BDD.cpp)

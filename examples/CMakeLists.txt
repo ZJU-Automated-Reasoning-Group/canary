@@ -37,3 +37,6 @@ target_link_libraries(BDDPtsSetBenchmark PRIVATE
   ${llvm_libs}
   m
 ) 
+
+# WPDS Examples 
+add_subdirectory(wpds) 
