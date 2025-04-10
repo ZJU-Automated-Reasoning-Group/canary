@@ -1,3 +1,9 @@
+/*
+* FIXME: It seems that the analysis does not use on-the-fly callgraph * construction, but uses a lightweight address-taken analysis to get * the callee list.
+* See the implementation of void Andersen::addConstraintForCall for details.
+*/
+
+
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/Analysis/ValueTracking.h>
 #include <llvm/IR/Constants.h>
@@ -393,8 +399,7 @@ void Andersen::addConstraintForCall(const llvm::CallBase *cs) {
     }
   } else // Indirect call
   {
-    // We do the simplest thing here: just assume the returned value can be
-    // anything :)
+    // We do the simplest thing here: just assume the returned value can be anything :)
     if (cs->getType()->isPointerTy()) {
       NodeIndex retIndex = nodeFactory.getValueNodeFor(cs);
       assert(retIndex != AndersNodeFactory::InvalidIndex &&
@@ -404,8 +409,8 @@ void Andersen::addConstraintForCall(const llvm::CallBase *cs) {
     }
 
     // For argument constraints, first search through all addr-taken functions:
-    // any function that takes can take as many variables is a potential
-    // candidate
+    // any function that takes can take as many variables is a potential candidate
+    // FIXME: so, it seems that the analysis does not use on-the-fly callgraph construction, but uses a lightweight address-taken analysis to get the callee list
     const Module *M = cs->getFunction()->getParent();
     for (auto const &f : *M) {
       NodeIndex funPtrIndex = nodeFactory.getValueNodeFor(&f);
