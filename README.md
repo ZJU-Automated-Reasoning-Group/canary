@@ -1,6 +1,6 @@
-# Canary
+# Lotus
 
-Canary is a program analysis, verification, and optimization framework. It provides several toolkits that can be used
+Lotus is a program analysis, verification, and optimization framework. It provides several toolkits that can be used
 individually or in combination to perform different tasks.
 The current version of Canary has been tested on x86 Linux and ARM Mac using LLVM-12 and LLVM-14 with Z3-4.11.
 
@@ -18,6 +18,7 @@ The current version of Canary has been tested on x86 Linux and ARM Mac using LLV
 
 - **SMT Solving**: Z3 integration (See `lib/Solvers/SMT`)
 - **Binary Decision Diagram (BDD)**: CUDD-based implementation (See `lib/Solvers/CUDD`)
+- **WPDS**: Weighted Pushdown System library for program analysis (See `lib/Solvers/WPDS`)
 
 ### Bug Finding
 
@@ -58,8 +59,8 @@ make -j$(nproc)  # Uses all available CPU cores
 ### Build Canary
 
 ```bash
-git clone https://github.com/ZJU-Automated-Reasoning-Group/canary
-cd canary
+git clone https://github.com/ZJU-Automated-Reasoning-Group/lotus
+cd lotus
 mkdir build && cd build
 cmake ../ -DLLVM_BUILD_PATH=/path/to/llvm/build
 make -j$(nproc)
@@ -104,7 +105,8 @@ Available options:
 
 Sea-DSA is a context-sensitive, field-sensitive pointer analysis based on DSA (Data Structure Analysis) for analyzing memory graphs and detecting memory-related issues.
 
-#### seadsa-dg
+
+**seadsa-dg**
 
 A simple tool for generating memory graphs:
 
@@ -115,9 +117,7 @@ seadsa-dg [options] <input LLVM bitcode file>
 Options:
 - `--sea-dsa-dot`: Generate DOT files visualizing the memory graphs
 
-#### seadsa-tool
-
-An advanced tool with more features for memory analysis:
+**seadsa-tool**
 
 ```bash
 seadsa-tool [options] <input LLVM bitcode file>
