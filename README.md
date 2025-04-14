@@ -147,3 +147,4 @@ Key options:
 - [SUTURE](https://github.com/seclab-ucr/SUTURE) - Static analysis for security
 - [LLVM Opt Benchmark](https://github.com/dtcxzyw/llvm-opt-benchmark) - LLVM optimization benchmarks
 - [EOS](https://github.com/gpoesia/eos) - ?
+- https://github.com/hotpeperoncino/sfs

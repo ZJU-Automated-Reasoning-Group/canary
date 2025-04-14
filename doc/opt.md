@@ -1,4 +1,4 @@
-# Optimizaitons 
+# Compiler Optimizaitons 
 
 
 - OOPSLA 20, Dynamic Dispatch of Context-Sensitive Optimizations

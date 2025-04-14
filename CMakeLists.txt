@@ -129,7 +129,6 @@ else()
   message(STATUS "Compiling sea-dsa without sanity checks")
 endif()
 
-
 # Add subdirectories
 add_subdirectory(lib)
 add_subdirectory(tools)

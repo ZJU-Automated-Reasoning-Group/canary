@@ -33,11 +33,11 @@ void AllocWrapInfo::getAnalysisUsage(AnalysisUsage &AU) const {
 }
 
 void AllocWrapInfo::initialize(Module &M, Pass *P) const {
-  if (!m_tliWrapper) {
+  if (m_tliWrapper == nullptr) {
     m_tliWrapper = getAnalysisIfAvailable<TargetLibraryInfoWrapperPass>();
   }
   
-  if (!m_tliWrapper) {
+  if (m_tliWrapper == nullptr) {
     llvm::errs() << "ERROR: AllocWrapInfo::initialize needs TargetLibraryInfo\n";
     assert(false);
     return;
@@ -105,7 +105,7 @@ void AllocWrapInfo::findAllocs(Module &M) const {
 }
 
 bool AllocWrapInfo::isAllocWrapper(llvm::Function &fn) const {
-  if (!m_tliWrapper) {
+  if (m_tliWrapper == nullptr) {
     llvm::errs() << "ERROR: AllocWrapInfo::initialize must be called\n";
     assert(false);
     return false;
@@ -114,7 +114,7 @@ bool AllocWrapInfo::isAllocWrapper(llvm::Function &fn) const {
 }
 
 bool AllocWrapInfo::isDeallocWrapper(llvm::Function &fn) const {
-  if (!m_tliWrapper) {
+  if (m_tliWrapper == nullptr) {
     llvm::errs() << "ERROR: AllocWrapInfo::initialize must be called\n";
     assert(false);
     return false;
@@ -123,7 +123,8 @@ bool AllocWrapInfo::isDeallocWrapper(llvm::Function &fn) const {
 }
 
 const std::set<llvm::StringRef> &AllocWrapInfo::getAllocWrapperNames(llvm::Module &M) const {
-  if (!m_tliWrapper) {
+  (void)M; // Unused parameter
+  if (m_tliWrapper == nullptr) {
     llvm::errs() << "ERROR: AllocWrapInfo::initialize must be called\n";
     assert(false);
   }    
