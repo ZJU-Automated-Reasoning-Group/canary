@@ -1,5 +1,5 @@
 /*
- * Ultility header-only library from https://github.com/agauniyal/rang
+ * Utility header-only library from https://github.com/agauniyal/rang
  */
 
 #ifndef RANG_DOT_HPP

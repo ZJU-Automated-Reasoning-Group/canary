@@ -25,7 +25,7 @@
 #include <set>
 #include <unordered_map>
 #include "Support/CFG.h"
-#include "Support/MapIterators.h"
+#include "Support/ADT/MapIterators.h"
 
 using namespace llvm;
 

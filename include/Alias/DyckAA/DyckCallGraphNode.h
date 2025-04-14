@@ -35,7 +35,7 @@
 #include <set>
 #include <map>
 
-#include "Support/MapIterators.h"
+#include "Support/ADT/MapIterators.h"
 
 using namespace llvm;
 
