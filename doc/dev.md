@@ -3,11 +3,12 @@
 ## TODO LIST
 
 
-#### Testing
+### Testing
 
 - Add unit test (at least for the SMT library)
 
 
+### New Features
 - Integrate the pre-condition inference engine in Beacon (SP'22), which relies on some code from KLEE (it does not use the symbolic execution engine in KLEE) and SVF. 
 - Integrate SVF as a library, which implementes several pointer analsyes with different precisions.
 - IR optimization: reduant load/store elimination, control-flow refinement, superoptimization, etc.

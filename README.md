@@ -1,4 +1,8 @@
-# Lotus
+<p align="center">
+  <img src="doc/logo.jpg" alt="Lotus Logo" width="100"/>
+</p>
+
+# Lotus 
 
 Lotus is a program analysis, verification, and optimization framework. It provides several toolkits that can be used
 individually or in combination to perform different tasks.
