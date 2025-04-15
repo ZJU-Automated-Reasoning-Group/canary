@@ -50,6 +50,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include <chrono>
 
 using namespace llvm;
 
@@ -92,6 +93,16 @@ constexpr auto MKINT_SINKS = mkarray<std::pair<const char*, size_t>>(
     std::pair<const char*, size_t>("gdth_ioctl_alloc", 1), 
     std::pair<const char*, size_t>("sock_alloc_send_skb", 1), 
     std::pair<const char*, size_t>("memcpy", 2));
+
+// Define a category for performance options
+static llvm::cl::OptionCategory PerformanceCategory("Performance Options",
+                                                 "Options for controlling analysis performance");
+
+// Add a timeout option
+static llvm::cl::opt<unsigned> FunctionTimeout("function-timeout",
+                                             llvm::cl::desc("Maximum time in seconds to spend analyzing a single function (0 = no limit)"),
+                                             llvm::cl::init(10),
+                                             llvm::cl::cat(PerformanceCategory));
 
 struct crange : public ConstantRange {
     /// https://llvm.org/doxygen/classllvm_1_1ConstantRange.html
@@ -851,6 +862,9 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
     PreservedAnalyses run(Module& M, ModuleAnalysisManager& MAM)
     {
         MKINT_LOG() << "Running MKint pass on module " << M.getName();
+        
+        // Initialize timeout from command line option
+        m_function_timeout = FunctionTimeout;
 
         // FIXME: This is a hack.
         auto ctx = new z3::context; // let it leak.
@@ -1378,6 +1392,10 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
             if (F->isDeclaration())
                 continue;
 
+            // Record start time for this function
+            m_function_start_time = std::chrono::steady_clock::now();
+            MKINT_LOG() << "Beginning analysis of function " << F->getName();
+
             // Get a path tree.
             for (auto& bb : F->getBasicBlockList()) {
                 for (const auto& pred : predecessors(&bb)) {
@@ -1387,12 +1405,6 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                     m_bbpaths[pred].push_back(&bb);
                 }
             }
-        }
-
-        // solve constraints.
-        for (auto F : m_taint_funcs) {
-            if (F->isDeclaration())
-                continue;
 
             m_solver.value().push();
             // add function arg constraints.
@@ -1408,11 +1420,28 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
 
             path_solving(&(F->getEntryBlock()), nullptr);
             m_solver.value().pop();
+            
+            // Report analysis time
+            auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now() - m_function_start_time).count();
+            MKINT_LOG() << "Completed analysis of function " << F->getName() 
+                       << " in " << elapsed << " seconds";
         }
     }
 
     void path_solving(BasicBlock* cur, BasicBlock* pred)
     {
+        // Check for timeout
+        if (m_function_timeout > 0) {
+            auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now() - m_function_start_time).count();
+            if (elapsed > static_cast<int64_t>(m_function_timeout)) {
+                MKINT_WARN() << "Timeout reached for function " << cur->getParent()->getName() 
+                             << " after " << elapsed << " seconds. Analysis incomplete.";
+                return;
+            }
+        }
+        
         if (m_backedges[cur].contains(pred))
             return;
 
@@ -1438,7 +1467,7 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                                 return;
                             }
 
-                            const auto get_tbr_assert = [lhs, rhs, cmp, this]() {
+                            const auto get_tbr_assert = [lhs, rhs, cmp, this]() -> z3::expr {
                                 switch (cmp->getPredicate()) {
                                 case ICmpInst::ICMP_EQ: // =
                                     return v2sym(lhs) == v2sym(rhs);
@@ -1461,10 +1490,10 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                                 case ICmpInst::ICMP_ULE: // unsigned <=
                                     return z3::ule(v2sym(lhs), v2sym(rhs));
                                 default:
-                                    break;
+                                    MKINT_CHECK_ABORT(false) << "unsupported icmp predicate: " << *cmp;
+                                    // Add a default return to satisfy compiler
+                                    return v2sym(lhs) == v2sym(lhs); // Always true expression as a fallback
                                 }
-
-                                MKINT_CHECK_ABORT(false) << "unsupported icmp predicate: " << *cmp;
                             };
 
                             const auto check = [cmp, is_true_br, this] {
@@ -1575,6 +1604,8 @@ private:
     std::optional<z3::solver> m_solver;
     DenseMap<const Value*, std::optional<z3::expr>> m_v2sym;
     std::map<const BasicBlock*, SmallVector<BasicBlock*, 2>> m_bbpaths;
+    std::chrono::time_point<std::chrono::steady_clock> m_function_start_time;
+    unsigned m_function_timeout; // Timeout in seconds for function analysis
 };
 } // namespace
 
@@ -1708,6 +1739,10 @@ int main(int argc, char **argv) {
     MKINT_LOG() << "  Bad Shift: " << (CheckBadShift ? "Enabled" : "Disabled");
     MKINT_LOG() << "  Array Out of Bounds: " << (CheckArrayOOB ? "Enabled" : "Disabled");
     MKINT_LOG() << "  Dead Branch: " << (CheckDeadBranch ? "Enabled" : "Disabled");
+
+    // Add performance configuration information
+    MKINT_LOG() << "Performance Configuration:";
+    MKINT_LOG() << "  Function Timeout: " << (FunctionTimeout == 0 ? "No limit" : std::to_string(FunctionTimeout) + " seconds");
 
     // Warn if no checkers are enabled
     if (!CheckIntOverflow && !CheckDivByZero && !CheckBadShift && !CheckArrayOOB && !CheckDeadBranch) {
