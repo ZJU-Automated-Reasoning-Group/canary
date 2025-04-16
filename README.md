@@ -6,17 +6,17 @@
 
 Lotus is a program analysis, verification, and optimization framework. It provides several toolkits that can be used
 individually or in combination to perform different tasks.
-The current version of Canary has been tested on x86 Linux and ARM Mac using LLVM-12 and LLVM-14 with Z3-4.11.
+The current version has been tested on x86 Linux and ARM Mac using LLVM-12 and LLVM-14 with Z3-4.11.
 
 ## Major Components
 
 ### Alias Analysis
 
-- **DyckAA**: A unification-based, exhaustive alias analysis (See `lib/DyckAA`)
+- **DyckAA**: A unification-based, exhaustive alias analysis (See `lib/Alias/DyckAA`)
 - **CFLAA**: All files in the subfolder are 1:1 copied from LLVM 14.0.6 and are subject to the LLVM license.
   We copy these files as LLVM removed them in the transition from version 14 to 15
-- **Sea-DSA**: A context-sensitive, field-sensitive alias analysis based on Data Structure Analysis (See `lib/seadsa`)
-- **Andersen**: Context-insensitive points-to analysis implementation (without on-the-fly callgraph construction)
+- **Sea-DSA**: A context-sensitive, field-sensitive alias analysis based on Data Structure Analysis (See `lib/Alias/seadsa`)
+- **Andersen**: Context-insensitive points-to analysis implementation (without on-the-fly callgraph construction) (See `lib/Alias/Andersen`)
 
 ### Constraint Solving
 
@@ -26,8 +26,8 @@ The current version of Canary has been tested on x86 Linux and ARM Mac using LLV
 
 ### Bug Finding
 
-- **Kint**: A static bug finder for integer-related vulnerabilities?
-- **ESSS**: For finding error checking bugs?
+- **Kint**: A static bug finder for integer-related and taint-style bugs
+- **ESSS**: For finding error checking bugs
 
 ### Utilities
 
@@ -60,7 +60,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ../llvm
 make -j$(nproc)  # Uses all available CPU cores
 ```
 
-### Build Canary
+### Build Lotus
 
 ```bash
 git clone https://github.com/ZJU-Automated-Reasoning-Group/lotus

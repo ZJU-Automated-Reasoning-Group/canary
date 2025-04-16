@@ -1,7 +1,12 @@
 paper
+tests
 .cache
 .clangd
 .vscode
+.cursorrules
+.cursorignore
+.cursor
+venv
 compile_commands.json
 test/regression/*.bc   
 test/regression/*.ll
@@ -15,10 +20,7 @@ cmake-build-*
 build
 *.a
 *.o
-benchmarks/*.ll
-benchmarks/*/*.ll
-benchmarks/*/*/*.ll
-benchmarks/*/*/*/*.ll
+*.ll
 *.log
 *+Asserts
 nbproject
@@ -60,3 +62,4 @@ bin
 callgrind.out.*
 .z3-trace
 dist/*
+docs/build
