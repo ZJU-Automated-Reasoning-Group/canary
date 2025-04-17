@@ -20,8 +20,8 @@ add_library(AndersenStatic STATIC $<TARGET_OBJECTS:AndersenObj>)
 
 target_link_libraries(Andersen
 	LLVMCore
-	LLVMSupport
-	LLVMAnalysis
-	LLVMTransformUtils
+	#LLVMSupport
+	#LLVMAnalysis
+	#LLVMTransformUtils
 	# BDD
 )

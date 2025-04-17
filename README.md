@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="doc/logo.jpg" alt="Lotus Logo" width="100"/>
+  <img src="docs/logo.jpg" alt="Lotus Logo" width="100"/>
 </p>
 
 # Lotus 

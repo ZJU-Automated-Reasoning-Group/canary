@@ -5,8 +5,8 @@ add_library(CFLAA
 
 target_link_libraries(CFLAA
   CanarySupport
-  LLVMCore
-  LLVMSupport
+  #LLVMCore
+  #LLVMSupport
 ) 
 
 target_include_directories(CFLAA PUBLIC

@@ -21,14 +21,7 @@ add_library(ESSS STATIC ${ESSS_SOURCES})
 target_include_directories(ESSS PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 # Link with LLVM libraries
-target_link_libraries(ESSS
-    LLVMAsmParser
-    LLVMSupport
-    LLVMCore
-    LLVMAnalysis
-    LLVMIRReader
-    LLVMDemangle
-)
+target_link_libraries(ESSS)
 
 # Install the library
 install(TARGETS ESSS

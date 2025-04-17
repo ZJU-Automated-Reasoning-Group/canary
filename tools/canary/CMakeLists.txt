@@ -1,37 +1,12 @@
-set(LLVM_LINK_COMPONENTS
-        LLVMAggressiveInstCombine
-        LLVMAnalysis
-        LLVMAsmParser
-        LLVMAsmPrinter
-        LLVMBinaryFormat
-        LLVMBitReader
-        LLVMBitWriter
-        LLVMBitstreamReader
-        LLVMCodeGen
-        LLVMCore
-        LLVMCoroutines
-        LLVMDemangle
-        LLVMFrontendOpenMP
-        LLVMIRReader
-        LLVMInstCombine
-        LLVMInstrumentation
-        LLVMLTO
-        LLVMLinker
-        LLVMMC
-        LLVMMCParser
-        LLVMMIRParser
-        LLVMObject
-        LLVMObjectYAML
-        LLVMOption
-        LLVMPasses
-        LLVMProfileData
-        LLVMRemarks
-        LLVMScalarOpts
-        LLVMSupport
-        LLVMTarget
-        LLVMTransformUtils
-        LLVMVectorize
-        LLVMipo
+# Find out what libraries are needed by LLVM
+llvm_map_components_to_libnames(LLVM_LINK_COMPONENTS
+  Coroutines
+  IRReader
+  ScalarOpts
+  Support
+  Target
+  TransformUtils
+  #ipo
 )
 
 add_executable(canary canary.cpp)
@@ -52,34 +27,3 @@ else()
             z ncurses pthread dl
     )
 endif()
-
-# Find out what libraries are needed by LLVM 
-llvm_map_components_to_libnames(LLVM_LINK_COMPONENTS
-  AggressiveInstCombine
-  Analysis
-  AsmParser
-  BinaryFormat
-  BitReader
-  BitWriter
-  BitstreamReader
-  CodeGen
-  Core
-  Coroutines
-  Demangle
-  FrontendOpenMP
-  IRReader
-  InstCombine
-  Instrumentation
-  Linker
-  MC
-  MCParser
-  Object
-  ProfileData
-  Remarks
-  ScalarOpts
-  Support
-  Target
-  TransformUtils
-  Vectorize
-  ipo
-)
