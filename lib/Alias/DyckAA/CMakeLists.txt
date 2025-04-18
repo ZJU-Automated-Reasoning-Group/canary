@@ -10,9 +10,3 @@ add_library(CanaryDyckAA STATIC
         DyckVFG.cpp
         MRAnalyzer.cpp
 )
-
-# Set include directories
-target_include_directories(CanaryDyckAA PUBLIC
-  ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_BINARY_DIR}/include
-)

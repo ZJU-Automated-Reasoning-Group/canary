@@ -1,8 +1,8 @@
-include_directories(
-	${andersen_SOURCE_DIR}/include
-	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_SOURCE_DIR}/include/Alias/Andersen
-)
+#include_directories(
+#	${andersen_SOURCE_DIR}/include
+#	${CMAKE_CURRENT_SOURCE_DIR}
+#	${CMAKE_SOURCE_DIR}/include/Alias/Andersen
+#)
 
 set(AndersenSourceCodes
 	Andersen.cpp
@@ -20,8 +20,4 @@ add_library(AndersenStatic STATIC $<TARGET_OBJECTS:AndersenObj>)
 
 target_link_libraries(Andersen
 	LLVMCore
-	#LLVMSupport
-	#LLVMAnalysis
-	#LLVMTransformUtils
-	# BDD
 )

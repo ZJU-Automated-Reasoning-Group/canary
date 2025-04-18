@@ -1,4 +1,4 @@
-# Source files for the merged WPDS library
+# Source files for the WPDS libraries
 set(WPDS_SRCS
     dictionary.cpp
     common.cpp
@@ -6,41 +6,32 @@ set(WPDS_SRCS
     key_source.cpp
 )
 
+# Define include directories
+set(WPDS_INCLUDE_DIRS
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/Solvers/WPDS
+)
+
 # Create libraries
 add_library(wpds STATIC ${WPDS_SRCS})
 add_library(wpds++ STATIC ${WPDS_SRCS})
 
-# Set compiler flags to suppress warnings related to deprecated functions
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(wpds PRIVATE -Wno-deprecated-declarations)
-    target_compile_options(wpds++ PRIVATE -Wno-deprecated-declarations)
-endif()
+# Configure common properties
+foreach(target wpds wpds++)
+    target_include_directories(${target} PUBLIC ${WPDS_INCLUDE_DIRS})
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(${target} PRIVATE -Wno-deprecated-declarations)
+    endif()
+endforeach()
 
-# Include directories
-target_include_directories(wpds PUBLIC 
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/Solvers/WPDS
-)
-target_include_directories(wpds++ PUBLIC 
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/Solvers/WPDS
-)
-
-# Set compile definitions for wpds++
+# Set specific compile definitions for wpds++
 target_compile_definitions(wpds++ PRIVATE WITNESS_TRACE=1 GRAMMATECH=1)
 
 # Create interface libraries for header-only components
-add_library(ewpds INTERFACE)
-target_include_directories(ewpds INTERFACE 
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/Solvers/WPDS
-)
-
-add_library(wpdsplusplus_util INTERFACE)
-target_include_directories(wpdsplusplus_util INTERFACE 
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/Solvers/WPDS
-)
+foreach(target ewpds wpdsplusplus_util)
+    add_library(${target} INTERFACE)
+    target_include_directories(${target} INTERFACE ${WPDS_INCLUDE_DIRS})
+endforeach()
 
 # Install headers
 file(GLOB_RECURSE WPDS_HEADERS "${CMAKE_SOURCE_DIR}/include/Solvers/WPDS/*.h")

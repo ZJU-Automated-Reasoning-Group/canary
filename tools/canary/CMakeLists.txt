@@ -1,12 +1,9 @@
 # Find out what libraries are needed by LLVM
 llvm_map_components_to_libnames(LLVM_LINK_COMPONENTS
   Coroutines
-  IRReader
-  ScalarOpts
   Support
   Target
   TransformUtils
-  #ipo
 )
 
 add_executable(canary canary.cpp)

@@ -9,8 +9,8 @@
 #include <queue>
 
 #include "Alias/Andersen/Andersen.h"
-#include "CycleDetector.h"
-#include "SparseBitVectorGraph.h"
+#include "Alias/Andersen/CycleDetector.h"
+#include "Alias/Andersen/SparseBitVectorGraph.h"
 
 
 using namespace llvm;
