@@ -5,7 +5,7 @@ project(canary C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Check for LLVM build path
 if (NOT LLVM_BUILD_PATH)
@@ -15,6 +15,7 @@ else()
 endif()
 
 # Find LLVM package
+find_package(CURL REQUIRED)
 find_package(LLVM REQUIRED CONFIG PATHS ${LLVM_BUILD_PATH})
 
 if(NOT LLVM_FOUND)
