@@ -5,6 +5,7 @@
 // These definitions replace the deprecated std::unary_function and std::binary_function
 
 namespace std {
+    #if __cplusplus < 201103L
     // Replacement for std::unary_function
     template<typename Arg, typename Result>
     struct unary_function {
@@ -19,6 +20,7 @@ namespace std {
         typedef Arg2 second_argument_type;
         typedef Result result_type;
     };
+    #endif
 }
 
 #endif // WPDS_COMPAT_H 

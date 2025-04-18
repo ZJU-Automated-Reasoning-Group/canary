@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <queue>
+#include <cstdint>
 #include <unordered_set>
 
 namespace Solvers {
