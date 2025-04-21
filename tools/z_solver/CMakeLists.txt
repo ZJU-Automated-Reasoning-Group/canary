@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 project(z_solver)
 
 # Add these lines to set C++ standard before finding packages
@@ -17,28 +17,9 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# Google Test setup
-include(FetchContent)
-find_package(GTest QUIET)
-if(NOT GTest_FOUND)
-    message(STATUS "GTest not found. Downloading and building from source...")
-    FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.12.1
-    )
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
-endif()
-
 find_package(Z3 REQUIRED)
-#find_package(ANTLR REQUIRED)
-#find_package(LLVM REQUIRED CONFIG)
-#find_package(CLANG REQUIRED CONFIG)
 include_directories(
     ${CMAKE_SOURCE_DIR}
-    #SYSTEM ${Z3_INCLUDE_DIRS}  # Add SYSTEM to treat Z3 headers as system headers
     ${Z3_INCLUDE_DIRS}
 )
 
@@ -76,10 +57,8 @@ add_executable(bestInv
 )
 
 target_link_libraries(bestInv
-        ${Z3_LIBRARIES}
-        frontend_lib
-#        ${LLVM_LIBRARIES}
-#        ${CLANG_LIBRARIES}
+    ${Z3_LIBRARIES}
+    frontend_lib
 )
 
 target_include_directories(bestInv PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -89,35 +68,9 @@ add_executable(kInductor
 )
 
 target_link_libraries(kInductor
-        ${Z3_LIBRARIES}
-        frontend_lib
-#        ${LLVM_LIBRARIES}
-#        ${CLANG_LIBRARIES}
+    ${Z3_LIBRARIES}
+    frontend_lib
 )
 
 target_include_directories(kInductor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Unit tests setup
-enable_testing()
-
-# Add test executable
-add_executable(z_solver_tests
-    # Add your test source files here
-    # For example:
-    "tests/basic_test.cpp"
-    "tests/cParser_test.cpp"
-    "tests/SyGuSParser_test.cpp"
-)
-
-# Link test executable with Google Test and your project libraries
-target_link_libraries(z_solver_tests
-    GTest::gtest
-    GTest::gtest_main
-    frontend_lib
-    ${Z3_LIBRARIES}
-    # Add any other libraries your tests need
-)
-
-# Add tests to CTest
-include(GoogleTest)
-gtest_discover_tests(z_solver_tests)

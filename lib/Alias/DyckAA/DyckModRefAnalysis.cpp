@@ -18,7 +18,7 @@
 
 #include "Alias/DyckAA/DyckAliasAnalysis.h"
 #include "Alias/DyckAA/DyckModRefAnalysis.h"
-#include "MRAnalyzer.h"
+#include "Alias/DyckAA/MRAnalyzer.h"
 #include "Support/RecursiveTimer.h"
 
 char DyckModRefAnalysis::ID = 0;

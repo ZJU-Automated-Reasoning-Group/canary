@@ -19,7 +19,7 @@
 #include <llvm/IR/InstIterator.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
-#include "MRAnalyzer.h"
+#include "Alias/DyckAA/MRAnalyzer.h"
 
 MRAnalyzer::MRAnalyzer(Module *M, DyckGraph *DG, DyckCallGraph *DCG) : M(M), DG(DG), DCG(DCG) {
 }
