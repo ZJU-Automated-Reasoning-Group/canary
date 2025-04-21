@@ -38,10 +38,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////
 #include "dictionary.h"
-#include <iostream>
-#include <stdio.h>
 #include "key_source.h"
 #include "keys.h"
+
+#include <iostream>
+#include <stdio.h>
 
 namespace wpds {
 
