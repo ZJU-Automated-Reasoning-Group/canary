@@ -1,5 +1,4 @@
 #include "CSIndex/Graph.h"
-
 #include "CSIndex/CSProgressBar.h"
 
 Graph::Graph() {

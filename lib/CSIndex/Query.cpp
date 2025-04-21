@@ -1,52 +1,5 @@
 #include "CSIndex/Query.h"
 
-//Query::Query() {
-//	initFlags();
-//}
-
-//Query::Query(const char* grafile) {
-//	initFlags();
-//	ifstream in(grafile);
-//	if (!in) {
-//		cout << "Error: Cannot open " << grafile << endl;
-//		return;
-//	}
-//	else
-//		cout << "reading " << grafile << endl;
-//	g = Graph(in);
-//	in.close();
-//	gsize = g.num_vertices();
-//	initQueue();
-//}
-
-//Query::Query(const char* filestem, const char* grafile, int _r, double _ps, bool mat) {
-//	initFlags();
-//	epsilon = _r;
-//	preselectratio = _ps;
-//	ismaterialized = mat;
-//	string filestr(filestem);
-//	filestemstr = filestr;
-//	// init graph
-//	ifstream in(grafile);
-//	if (!in) {
-//		cout << "Error: Cannot open " << grafile << endl;
-//		return;
-//	}
-//	else
-//		cout << "reading " << grafile << endl;
-//	g = Graph(in);
-//	in.close();
-//	gsize = g.num_vertices();
-//	vector<string> gfilenames = makeggfilename(filestem);
-//	// init gates
-//	initGates(gfilenames[0].c_str());
-//	// init gategraph
-//	initGateGraph(gfilenames[1].c_str());
-//	// init gate graph's reachability indices
-//	string indexfile = filestr+".index";
-//	initIndex(indexfile.c_str());
-//	initQueue();
-//}
 
 Query::Query(const char* filestem, Graph& ig, int _r, double _ps, bool mat) : g(ig) {
 	initFlags();

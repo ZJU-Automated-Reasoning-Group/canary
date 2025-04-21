@@ -1,9 +1,3 @@
-#include_directories(
-#	${andersen_SOURCE_DIR}/include
-#	${CMAKE_CURRENT_SOURCE_DIR}
-#	${CMAKE_SOURCE_DIR}/include/Alias/Andersen
-#)
-
 set(AndersenSourceCodes
 	Andersen.cpp
 	AndersenAA.cpp

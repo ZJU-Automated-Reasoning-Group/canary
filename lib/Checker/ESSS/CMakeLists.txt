@@ -16,7 +16,6 @@ set(ESSS_SOURCES
 
 # Automatically find header files in include directory
 file(GLOB ESSS_HEADERS "${CMAKE_SOURCE_DIR}/include/Checker/ESSS/*.h")
-
 add_library(ESSS STATIC ${ESSS_SOURCES})
 target_include_directories(ESSS PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
