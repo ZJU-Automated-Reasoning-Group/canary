@@ -38,5 +38,13 @@ target_link_libraries(BDDPtsSetBenchmark PRIVATE
   m
 ) 
 
+# PDG Example
+add_executable(PDGExample PDGExample.cpp)
+target_include_directories(PDGExample PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(PDGExample PRIVATE
+  CanaryPDG
+  ${llvm_libs}
+)
+
 # WPDS Examples 
 add_subdirectory(wpds) 
