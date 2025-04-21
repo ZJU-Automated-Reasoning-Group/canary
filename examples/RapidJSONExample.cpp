@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
+#include "Support/rapidjson/document.h"
+#include "Support/rapidjson/writer.h"
+#include "Support/rapidjson/stringbuffer.h"
 
 using namespace rapidjson;
 

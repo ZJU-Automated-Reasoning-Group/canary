@@ -18,6 +18,10 @@ The current version has been tested on x86 Linux and ARM Mac using LLVM-12 and L
 - **Sea-DSA**: A context-sensitive, field-sensitive alias analysis based on Data Structure Analysis (See `lib/Alias/seadsa`)
 - **Andersen**: Context-insensitive points-to analysis implementation (without on-the-fly callgraph construction) (See `lib/Alias/Andersen`)
 
+### Intermediate Representations
+
+- **PDG**: Program Dependence Graph
+
 ### Constraint Solving
 
 - **SMT Solving**: Z3 integration (See `lib/Solvers/SMT`)
