@@ -63,3 +63,4 @@ callgrind.out.*
 .z3-trace
 dist/*
 docs/build
+/.vs
