@@ -191,7 +191,7 @@ static llvm::cl::opt<bool> CheckDeadBranch("check-dead-branch",
 
 template <interr err, typename StrRet = const char*> constexpr StrRet mkstr()
 {
-    if constexpr (err == interr::INT_OVERFLOW) {
+    if (err == interr::INT_OVERFLOW) {
         return "integer overflow";
     } else if (err == interr::DIV_BY_ZERO) {
         return "divide by zero";
@@ -234,7 +234,7 @@ std::string_view mkstr(interr err)
     return ""; // statically impossible
 }
 
-template <interr err_t, typename I> static std::enable_if_t<std::is_pointer_v<I>> mark_err(I inst)
+template <interr err_t, typename I> static typename std::enable_if<std::is_pointer<I>::value>::type mark_err(I inst)
 {
     auto& ctx = inst->getContext();
     std::string prefix = "";
@@ -245,12 +245,12 @@ template <interr err_t, typename I> static std::enable_if_t<std::is_pointer_v<I>
     inst->setMetadata(MKINT_IR_ERR, md);
 }
 
-template <interr err_t, typename I> static std::enable_if_t<!std::is_pointer_v<I>> mark_err(I& inst)
+template <interr err_t, typename I> static typename std::enable_if<!std::is_pointer<I>::value>::type mark_err(I& inst)
 {
     mark_err<err_t>(&inst);
 }
 
-static void mark_taint(Instruction& inst, std::string_view taint_name = "")
+static void mark_taint(Instruction& inst, std::string taint_name = "")
 {
     auto& ctx = inst.getContext();
     auto md = MDNode::get(ctx, MDString::get(ctx, taint_name));
@@ -329,7 +329,7 @@ crange compute_binary_rng(const BinaryOperator* op, crange lhs, crange rhs)
 
 struct MKintPass : public PassInfoMixin<MKintPass> {
     MKintPass()
-        : m_solver(std::nullopt)
+        : m_solver(llvm::None)
     {
     }
 
@@ -654,7 +654,7 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
         raw_string_ostream os(str);
         bb->printAsOperand(os, false);
 
-        return std::move(str);
+        return str; // Return directly to allow copy elision
     }
 
     static SmallVector<Function*, 2> get_sink_fns(Instruction* inst) noexcept
@@ -804,7 +804,7 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
 
     void mark_func_sinks(Function& F)
     {
-        static auto mark_sink = [](Instruction& inst, std::string_view sink_name) {
+        static auto mark_sink = [](Instruction& inst, std::string sink_name) {
             auto& ctx = inst.getContext();
             auto md = MDNode::get(ctx, MDString::get(ctx, sink_name));
             inst.setMetadata(MKINT_IR_SINK, md);
@@ -813,7 +813,9 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
         for (auto& inst : instructions(F)) {
             if (auto* call = dyn_cast<CallInst>(&inst)) {
                 // call in MKINT_SINKS
-                for (const auto& [name, idx] : MKINT_SINKS) {
+                for (const auto& sink_pair : MKINT_SINKS) {
+                    const char* name = sink_pair.first;
+                    size_t idx = sink_pair.second;
                     if (auto called_fn = call->getCalledFunction()) {
                         const auto demangled_func_name = demangle(called_fn->getName().str().c_str());
                         if (demangled_func_name == name) {
@@ -1129,10 +1131,10 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
             return false;
         }
 
-        m_solver.value().add(
-            z3::ule(bv, m_solver.value().ctx().bv_val(rng.getUnsignedMax().getZExtValue(), rng.getBitWidth())));
-        m_solver.value().add(
-            z3::uge(bv, m_solver.value().ctx().bv_val(rng.getUnsignedMin().getZExtValue(), rng.getBitWidth())));
+        m_solver.getValue().add(
+            z3::ule(bv, m_solver.getValue().ctx().bv_val(rng.getUnsignedMax().getZExtValue(), rng.getBitWidth())));
+        m_solver.getValue().add(
+            z3::uge(bv, m_solver.getValue().ctx().bv_val(rng.getUnsignedMin().getZExtValue(), rng.getBitWidth())));
         return true;
     }
 
@@ -1157,8 +1159,8 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
         }();
 
         const auto check = [&, this](interr et, bool is_signed) {
-            if (m_solver.value().check() == z3::sat) { // counter example
-                z3::model m = m_solver.value().get_model();
+            if (m_solver.getValue().check() == z3::sat) { // counter example
+                z3::model m = m_solver.getValue().get_model();
                 MKINT_WARN() << rang::fg::yellow << rang::style::bold << mkstr(et) << rang::style::reset << " at "
                              << rang::bg::black << rang::fg::red << op->getParent()->getParent()->getName()
                              << "::" << *op << rang::style::reset;
@@ -1193,18 +1195,18 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
             }
         };
 
-        m_solver.value().push();
+        m_solver.getValue().push();
         switch (op->getOpcode()) {
         case Instruction::Add:
             if (!CheckIntOverflow)
                 break;
                 
             if (!is_nsw) { // unsigned
-                m_solver.value().add(!z3::bvadd_no_overflow(lhs_bv, rhs_bv, false));
+                m_solver.getValue().add(!z3::bvadd_no_overflow(lhs_bv, rhs_bv, false));
                 check(interr::INT_OVERFLOW, false);
             } else {
-                m_solver.value().add(!z3::bvadd_no_overflow(lhs_bv, rhs_bv, true));
-                m_solver.value().add(!z3::bvadd_no_underflow(lhs_bv, rhs_bv));
+                m_solver.getValue().add(!z3::bvadd_no_overflow(lhs_bv, rhs_bv, true));
+                m_solver.getValue().add(!z3::bvadd_no_underflow(lhs_bv, rhs_bv));
                 check(interr::INT_OVERFLOW, true);
             }
             break;
@@ -1214,11 +1216,11 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                 break;
                 
             if (!is_nsw) {
-                m_solver.value().add(!z3::bvsub_no_underflow(lhs_bv, rhs_bv, false));
+                m_solver.getValue().add(!z3::bvsub_no_underflow(lhs_bv, rhs_bv, false));
                 check(interr::INT_OVERFLOW, false);
             } else {
-                m_solver.value().add(!z3::bvsub_no_underflow(lhs_bv, rhs_bv, true));
-                m_solver.value().add(!z3::bvsub_no_overflow(lhs_bv, rhs_bv));
+                m_solver.getValue().add(!z3::bvsub_no_underflow(lhs_bv, rhs_bv, true));
+                m_solver.getValue().add(!z3::bvsub_no_overflow(lhs_bv, rhs_bv));
                 check(interr::INT_OVERFLOW, true);
             }
             break;
@@ -1228,11 +1230,11 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                 break;
                 
             if (!is_nsw) {
-                m_solver.value().add(!z3::bvmul_no_overflow(lhs_bv, rhs_bv, false));
+                m_solver.getValue().add(!z3::bvmul_no_overflow(lhs_bv, rhs_bv, false));
                 check(interr::INT_OVERFLOW, false);
             } else {
-                m_solver.value().add(!z3::bvmul_no_overflow(lhs_bv, rhs_bv, true));
-                m_solver.value().add(!z3::bvmul_no_underflow(lhs_bv, rhs_bv)); // INTMAX * -1
+                m_solver.getValue().add(!z3::bvmul_no_overflow(lhs_bv, rhs_bv, true));
+                m_solver.getValue().add(!z3::bvmul_no_underflow(lhs_bv, rhs_bv)); // INTMAX * -1
                 check(interr::INT_OVERFLOW, true);
             }
             break;
@@ -1242,21 +1244,21 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
             if (!CheckDivByZero)
                 break;
                 
-            m_solver.value().add(rhs_bv == m_solver.value().ctx().bv_val(0, rhs_bits));
+            m_solver.getValue().add(rhs_bv == m_solver.getValue().ctx().bv_val(0, rhs_bits));
             check(interr::DIV_BY_ZERO, false);
             break;
             
         case Instruction::SRem:
         case Instruction::SDiv: // can be overflow or divisor == 0
             if (CheckDivByZero) {
-                m_solver.value().push();
-                m_solver.value().add(rhs_bv == m_solver.value().ctx().bv_val(0, rhs_bits)); // may 0?
+                m_solver.getValue().push();
+                m_solver.getValue().add(rhs_bv == m_solver.getValue().ctx().bv_val(0, rhs_bits)); // may 0?
                 check(interr::DIV_BY_ZERO, true);
-                m_solver.value().pop();
+                m_solver.getValue().pop();
             }
             
             if (CheckIntOverflow) {
-                m_solver.value().add(z3::bvsdiv_no_overflow(lhs_bv, rhs_bv));
+                m_solver.getValue().add(z3::bvsdiv_no_overflow(lhs_bv, rhs_bv));
                 check(interr::INT_OVERFLOW, true);
             }
             break;
@@ -1267,7 +1269,7 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
             if (!CheckBadShift)
                 break;
                 
-            m_solver.value().add(rhs_bv >= m_solver.value().ctx().bv_val(rhs_bits, rhs_bits)); // sat means bug
+            m_solver.getValue().add(rhs_bv >= m_solver.getValue().ctx().bv_val(rhs_bits, rhs_bits)); // sat means bug
             check(interr::BAD_SHIFT, false);
             break;
             
@@ -1279,7 +1281,7 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
         default:
             break;
         }
-        m_solver.value().pop();
+        m_solver.getValue().pop();
     }
 
     z3::expr binary_op_propagate(BinaryOperator* op)
@@ -1337,7 +1339,7 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
         }
 
         const std::string new_sym_str = "\%cast" + std::to_string(op->getValueID());
-        return m_solver.value().ctx().bv_const(new_sym_str.c_str(), bits); // new expr
+        return m_solver.getValue().ctx().bv_const(new_sym_str.c_str(), bits); // new expr
     }
 
     void mark_errors()
@@ -1379,11 +1381,11 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
     z3::expr v2sym(const Value* v)
     {
         if (auto it = m_v2sym.find(v); it != m_v2sym.end())
-            return it->second.value();
+            return it->second.getValue();
 
         auto lconst = dyn_cast<ConstantInt>(v);
         MKINT_CHECK_ABORT(nullptr != lconst) << "unsupported value -> symbol mapping: " << *v;
-        return m_solver.value().ctx().bv_val(lconst->getZExtValue(), lconst->getType()->getIntegerBitWidth());
+        return m_solver.getValue().ctx().bv_val(lconst->getZExtValue(), lconst->getType()->getIntegerBitWidth());
     }
 
     void smt_solving(Module& M)
@@ -1406,20 +1408,20 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                 }
             }
 
-            m_solver.value().push();
+            m_solver.getValue().push();
             // add function arg constraints.
             for (auto& arg : F->args()) {
                 if (!arg.getType()->isIntegerTy())
                     continue;
                 const auto arg_name = F->getName() + "." + std::to_string(arg.getArgNo());
                 const auto argv
-                    = m_solver.value().ctx().bv_const(arg_name.str().c_str(), arg.getType()->getIntegerBitWidth());
+                    = m_solver.getValue().ctx().bv_const(arg_name.str().c_str(), arg.getType()->getIntegerBitWidth());
                 m_v2sym[&arg] = argv;
                 add_range_cons(get_range_by_bb(&arg, &(F->getEntryBlock())), argv);
             }
 
             path_solving(&(F->getEntryBlock()), nullptr);
-            m_solver.value().pop();
+            m_solver.getValue().pop();
             
             // Report analysis time
             auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
@@ -1497,7 +1499,7 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                             };
 
                             const auto check = [cmp, is_true_br, this] {
-                                if (m_solver.value().check() == z3::unsat) { // counter example
+                                if (m_solver.getValue().check() == z3::unsat) { // counter example
                                     MKINT_WARN() << "[SMT Solving] cannot continue " << (is_true_br ? "true" : "false")
                                                  << " branch of " << *cmp;
                                     return false;
@@ -1506,15 +1508,15 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                             };
 
                             if (is_true_br) { // T branch
-                                m_solver.value().add(get_tbr_assert());
+                                m_solver.getValue().add(get_tbr_assert());
                                 if (!check())
                                     return;
-                                m_v2sym[cmp] = m_solver.value().ctx().bv_val(true, 1);
+                                m_v2sym[cmp] = m_solver.getValue().ctx().bv_val(true, 1);
                             } else { // F branch
-                                m_solver.value().add(!get_tbr_assert());
+                                m_solver.getValue().add(!get_tbr_assert());
                                 if (!check())
                                     return;
-                                m_v2sym[cmp] = m_solver.value().ctx().bv_val(false, 1);
+                                m_v2sym[cmp] = m_solver.getValue().ctx().bv_val(false, 1);
                             }
                         }
                     }
@@ -1529,16 +1531,16 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                         // not (all)
                         for (auto c : swt->cases()) {
                             auto case_val = c.getCaseValue();
-                            m_solver.value().add(v2sym(cond)
-                                != m_solver.value().ctx().bv_val(
+                            m_solver.getValue().add(v2sym(cond)
+                                != m_solver.getValue().ctx().bv_val(
                                     case_val->getZExtValue(), cond->getType()->getIntegerBitWidth()));
                         }
                     } else {
                         for (auto c : swt->cases()) {
                             if (c.getCaseSuccessor() == cur) {
                                 auto case_val = c.getCaseValue();
-                                m_solver.value().add(v2sym(cond)
-                                    == m_solver.value().ctx().bv_val(
+                                m_solver.getValue().add(v2sym(cond)
+                                    == m_solver.getValue().ctx().bv_val(
                                         case_val->getZExtValue(), cond->getType()->getIntegerBitWidth()));
                                 break;
                             }
@@ -1567,16 +1569,16 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                     return;
             } else {
                 const auto name = "\%vid" + std::to_string(inst.getValueID());
-                m_v2sym[&inst] = m_solver.value().ctx().bv_const(name.c_str(), inst.getType()->getIntegerBitWidth());
+                m_v2sym[&inst] = m_solver.getValue().ctx().bv_const(name.c_str(), inst.getType()->getIntegerBitWidth());
                 if (!add_range_cons(get_range_by_bb(&inst, inst.getParent()), v2sym(&inst)))
                     return;
             }
         }
 
         for (auto succ : m_bbpaths[cur]) {
-            m_solver.value().push();
+            m_solver.getValue().push();
             path_solving(succ, cur);
-            m_solver.value().pop();
+            m_solver.getValue().pop();
         }
     }
 
@@ -1601,8 +1603,8 @@ private:
     std::set<Instruction*> m_div_zero_insts;
 
     // constraint solving
-    std::optional<z3::solver> m_solver;
-    DenseMap<const Value*, std::optional<z3::expr>> m_v2sym;
+    llvm::Optional<z3::solver> m_solver;
+    DenseMap<const Value*, llvm::Optional<z3::expr>> m_v2sym;
     std::map<const BasicBlock*, SmallVector<BasicBlock*, 2>> m_bbpaths;
     std::chrono::time_point<std::chrono::steady_clock> m_function_start_time;
     unsigned m_function_timeout; // Timeout in seconds for function analysis

@@ -37,12 +37,6 @@ To detect integer overflow bugs using Kint:
 
     kint input.bc
 
-To find error-handling bugs:
-
-.. code-block:: bash
-
-    esss input.bc
-
 Working with LLVM Bitcode
 -------------------------
 

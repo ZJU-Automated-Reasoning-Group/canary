@@ -31,7 +31,6 @@ Bug Finding
 -----------
 
 * **Kint**: A static bug finder for integer-related and taint-style bugs
-* **ESSS**: For finding error checking bugs
 
 Utilities
 ---------

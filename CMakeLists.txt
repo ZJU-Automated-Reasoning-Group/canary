@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(canary C CXX)
 
-# Set C++ standard to 17
-set(CMAKE_CXX_STANDARD 17)
+# Set C++ standard to 14
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -54,8 +54,8 @@ link_directories(${LLVM_LIBRARY_DIRS})
 include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Include RapidJSON
-message(STATUS "Including RapidJSON library")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/rapidjson)
+#message(STATUS "Including RapidJSON library")
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/rapidjson)
 
 # Find Z3
 find_library(

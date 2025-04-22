@@ -21,6 +21,7 @@ The current version has been tested on x86 Linux and ARM Mac using LLVM-12 and L
 ### Intermediate Representations
 
 - **PDG**: Program Dependence Graph
+- **SVFG**: TBD
 
 ### Constraint Solving
 
@@ -31,7 +32,6 @@ The current version has been tested on x86 Linux and ARM Mac using LLVM-12 and L
 ### Bug Finding
 
 - **Kint**: A static bug finder for integer-related and taint-style bugs
-- **ESSS**: For finding error checking bugs
 
 ### Utilities
 
@@ -146,6 +146,20 @@ Key options:
 ./owl file.smt2
 ```
 
+## Development 
+
+### Pointer Analysis
+Implement more interfaces and examples to facilitate evaluation and client applications.
+
+- Basics: average sizes of points-to sets, percentage of alias pairs
+- Pointer queries: points-to, alias pair, alias set, pointed-by set
+- Callgraph: callgraph edges, reachable methods
+- Optimizations: devirtualization, dead code elimination, ...
+- Security: control-flow integrity, code pointer integrity, ...
+- IR: memory SSA, DDG, PDG/SDG, SVFG, etc.
+
+Currently, we may not focus on some "high-level clinets" such as taint analysis and  memory safety verification, which can require more reasoning capabilities dataflow tracking, numerical analysis, path sensitvity, etc.
+
 ## Related Work
 
 - [DG](https://github.com/mchalupa/dg) - Dependence Graph for analysis of LLVM bitcode
@@ -154,5 +168,7 @@ Key options:
 - [Andersen](https://github.com/grievejia/andersen) - Andersen's points-to analysis
 - [SUTURE](https://github.com/seclab-ucr/SUTURE) - Static analysis for security
 - [LLVM Opt Benchmark](https://github.com/dtcxzyw/llvm-opt-benchmark) - LLVM optimization benchmarks
-- [EOS](https://github.com/gpoesia/eos) - ?
+- [EOS](https://github.com/gpoesia/eos)
 - https://github.com/hotpeperoncino/sfs
+- https://github.com/jumormt/PSTA-16 
+- https://github.com/SVF-tools/SVF: Static Value-Flow Analysis Framework for Source Code

@@ -30,7 +30,6 @@ Bug Finding
 -----------
 
 - :doc:`Kint <bug_finding/kint>`: Integer bug detector
-- :doc:`ESSS <bug_finding/esss>`: Error checking bug detector
 
 Utilities
 ---------

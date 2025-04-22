@@ -68,11 +68,15 @@ namespace wpds
 
     /* Generic hashing function for voidpairs */
     typedef std::pair<void*,void*> voidpair_key_t;
-    struct hasher_voidpair_key : public std::unary_function<voidpair_key_t, size_t> {
+    struct hasher_voidpair_key {
+        typedef voidpair_key_t argument_type;
+        typedef size_t result_type;
         size_t operator() (const voidpair_key_t& k) const { return (size_t)k.first ^ (size_t)k.second; }
     };  
-    struct equal_voidpair_key : 
-        public std::binary_function<voidpair_key_t, voidpair_key_t, bool> {
+    struct equal_voidpair_key {
+        typedef voidpair_key_t first_argument_type;
+        typedef voidpair_key_t second_argument_type;
+        typedef bool result_type;
         bool operator()(const voidpair_key_t &k1, const voidpair_key_t &k2) const
         { return k1 == k2; }
     };
@@ -796,10 +800,15 @@ namespace wpds
                 return wg.print(o);
             }
 
-            struct hasher_void_key : public std::unary_function<void*, size_t> {
+            struct hasher_void_key {
+                typedef void* argument_type;
+                typedef size_t result_type;
                 size_t operator() (const void* k) const { return (size_t)k; }
             };  
-            struct equal_void_key : public std::binary_function<void*, void*, bool> {
+            struct equal_void_key {
+                typedef void* first_argument_type;
+                typedef void* second_argument_type;
+                typedef bool result_type;
                 bool operator() (const void* k1, const void* k2) const 
                 { return k1 == k2; }
             };  

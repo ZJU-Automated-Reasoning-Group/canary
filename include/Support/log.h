@@ -65,12 +65,21 @@ private:
 };
 
 namespace detail {
+    // C++14 compatible void_t implementation
+    template <typename...> struct make_void { typedef void type; };
+    template <typename... Ts> using void_t = typename make_void<Ts...>::type;
 
-    template <typename T, typename = void> inline constexpr bool is_streamable_v = false;
+    // Replace inline constexpr with regular template variable
+    template <typename T, typename = void> 
+    struct is_streamable : std::false_type {};
 
     template <typename T>
-    inline constexpr bool
-        is_streamable_v<T, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>> = true;
+    struct is_streamable<T, void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>> 
+        : std::true_type {};
+    
+    // Helper to simplify usage
+    template <typename T>
+    constexpr bool is_streamable_v = is_streamable<T>::value;
 
     class log_wrapper {
     public:
@@ -88,14 +97,16 @@ namespace detail {
         log_wrapper&& operator<<(std::string_view v);
 
         template <typename T>
-        std::enable_if_t<std::is_convertible_v<T, std::string_view>, log_wrapper&&> operator<<(const T& v)
+        typename std::enable_if<std::is_convertible<T, std::string_view>::value, log_wrapper&&>::type 
+        operator<<(const T& v)
         {
             return operator<<(std::string_view(v));
         }
 
         template <typename T>
-        std::enable_if_t<!std::is_convertible_v<T, std::string_view> && is_streamable_v<T>, log_wrapper&&> operator<<(
-            const T& v)
+        typename std::enable_if<!std::is_convertible<T, std::string_view>::value && 
+                               is_streamable<T>::value, log_wrapper&&>::type
+        operator<<(const T& v)
         {
             m_stream << v;
             m_last_was_newline = false;
@@ -103,7 +114,8 @@ namespace detail {
         }
 
         template <typename T>
-        std::enable_if_t<!std::is_convertible<T, std::string_view>::value && !is_streamable_v<T>, log_wrapper&&>
+        typename std::enable_if<!std::is_convertible<T, std::string_view>::value && 
+                               !is_streamable<T>::value, log_wrapper&&>::type
         operator<<(const T& v)
         {
             std::string str;

@@ -45,7 +45,6 @@ The ``lib/`` directory contains the implementation of the different components:
 * ``lib/Checker/``: Bug finding implementations
   
   * ``lib/Checker/Kint/``: Integer-related bug detector
-  * ``lib/Checker/ESSS/``: Error checking bug detector
 
 * ``lib/Transform/``: IR transformation passes
 

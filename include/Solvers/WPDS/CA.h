@@ -428,7 +428,9 @@ namespace wpds
 
             void for_each( TransActionFunctor<T>& action ) const;
 
-            struct KeyPairPredicate : public std::unary_function<KeyPair,bool> {
+            struct KeyPairPredicate {
+                typedef KeyPair argument_type;
+                typedef bool result_type;
                 virtual ~KeyPairPredicate() {}
                 virtual bool operator()(KeyPair k) const = 0;
             };

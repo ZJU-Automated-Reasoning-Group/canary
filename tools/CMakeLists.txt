@@ -1,7 +1,6 @@
 add_subdirectory(owl)
 add_subdirectory(csr)
 add_subdirectory(canary)
-add_subdirectory(esss)
 add_subdirectory(kint)
 add_subdirectory(seadsa)
 add_subdirectory(z_solver)
