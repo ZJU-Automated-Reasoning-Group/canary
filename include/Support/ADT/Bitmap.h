@@ -18,6 +18,7 @@
 #include "llvm/Support/MathExtras.h"
 #include "llvm/ADT/ilist.h"
 #include "llvm/Support/raw_ostream.h"
+
 namespace llvm {
 
 /// MySparseBitVector is an implementation of a bitvector that is sparse

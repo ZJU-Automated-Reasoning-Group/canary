@@ -54,7 +54,6 @@
 #include <utility>                          /* pair<T1,T2> */
 #include <HashMap.h>
 #include "myallocator.h"
-#include "compat.h"
 
 namespace wpds
 {

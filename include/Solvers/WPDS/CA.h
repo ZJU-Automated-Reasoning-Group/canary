@@ -49,7 +49,6 @@
 #include "catransition.h"
 #include "UTIL.h"
 #include "Traits.h"
-#include "compat.h"
 
 /*
  * Modify these to adjust the initial number
