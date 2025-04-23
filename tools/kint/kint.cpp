@@ -46,7 +46,7 @@
 #include <limits>
 #include <map>
 #include <optional>
-#include <string_view>
+#include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -211,7 +211,8 @@ template <interr err, typename StrRet = const char*> constexpr StrRet mkstr()
     }
 }
 
-std::string_view mkstr(interr err)
+// Non-template version to handle runtime values
+inline const char* mkstr(interr err)
 {
     switch (err) {
     case interr::INT_OVERFLOW:
