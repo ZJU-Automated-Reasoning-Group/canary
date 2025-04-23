@@ -8,7 +8,7 @@
 #include <memory>
 #include <mutex>
 #include <ostream>
-#include <string_view>
+#include <string>
 #include <type_traits>
 
 namespace mkint {
@@ -69,7 +69,7 @@ namespace detail {
     template <typename...> struct make_void { typedef void type; };
     template <typename... Ts> using void_t = typename make_void<Ts...>::type;
 
-    // Replace inline constexpr with regular template variable
+    // Use struct member instead of variable template (C++17)
     template <typename T, typename = void> 
     struct is_streamable : std::false_type {};
 
@@ -77,34 +77,40 @@ namespace detail {
     struct is_streamable<T, void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>> 
         : std::true_type {};
     
-    // Helper to simplify usage
-    template <typename T>
-    constexpr bool is_streamable_v = is_streamable<T>::value;
+    // Removed C++17 variable template
 
     class log_wrapper {
     public:
+        // Replace fold expression with C++14 compatible code
+        template <typename Arg>
+        void write_arg(std::ostream& stream, Arg&& arg) {
+            stream << std::forward<Arg>(arg);
+        }
+        
         template <typename... Args>
         log_wrapper(std::ostream& stream, Args&&... args)
             : m_stream(stream)
         {
-            // fold
-            (void)std::initializer_list<int> { (m_stream << std::forward<Args>(args), 0)... };
+            // Use C++14 compatible way to unpack arguments
+            int dummy[] = { 0, (write_arg(m_stream, std::forward<Args>(args)), 0)... };
+            (void)dummy; // Suppress unused variable warning
         }
 
         log_wrapper(log_wrapper&& wrapper);
         log_wrapper(log_wrapper&) = delete;
 
-        log_wrapper&& operator<<(std::string_view v);
+        // Replace std::string_view with const std::string&
+        log_wrapper&& operator<<(const std::string& v);
 
         template <typename T>
-        typename std::enable_if<std::is_convertible<T, std::string_view>::value, log_wrapper&&>::type 
+        typename std::enable_if<std::is_convertible<T, std::string>::value, log_wrapper&&>::type 
         operator<<(const T& v)
         {
-            return operator<<(std::string_view(v));
+            return operator<<(std::string(v));
         }
 
         template <typename T>
-        typename std::enable_if<!std::is_convertible<T, std::string_view>::value && 
+        typename std::enable_if<!std::is_convertible<T, std::string>::value && 
                                is_streamable<T>::value, log_wrapper&&>::type
         operator<<(const T& v)
         {
@@ -114,7 +120,7 @@ namespace detail {
         }
 
         template <typename T>
-        typename std::enable_if<!std::is_convertible<T, std::string_view>::value && 
+        typename std::enable_if<!std::is_convertible<T, std::string>::value && 
                                !is_streamable<T>::value, log_wrapper&&>::type
         operator<<(const T& v)
         {
@@ -139,7 +145,7 @@ detail::log_wrapper log();
 detail::log_wrapper debug();
 detail::log_wrapper warn();
 detail::log_wrapper error();
-detail::log_wrapper check(bool cond, bool abort, std::string_view prompt, std::string_view file, size_t line);
+detail::log_wrapper check(bool cond, bool abort, const std::string& prompt, const std::string& file, size_t line);
 
 } // namespace mkint
 

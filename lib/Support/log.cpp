@@ -1,4 +1,4 @@
-#include "Support/log.h"
+#include "Support/Log.h"
 #include "Support/range.h"
 
 #include <cassert>
@@ -8,7 +8,7 @@
 #include <functional>
 #include <iostream>
 #include <ostream>
-#include <string_view>
+#include <string>
 #include <mutex>
 
 // Prompt and style constants
@@ -125,7 +125,7 @@ detail::log_wrapper::log_wrapper(log_wrapper&& wrapper)
 }
 
 detail::log_wrapper&&
-detail::log_wrapper::operator<<(std::string_view v)
+detail::log_wrapper::operator<<(const std::string& v)
 {
     if (m_stop) {
         return std::move(*this);
@@ -205,7 +205,7 @@ detail::log_wrapper error()
     return detail::log_wrapper(logger.getStream(), ERROR_STYLE_FG, ERROR_PROMPT, rang::style::reset, '\t');
 }
 
-detail::log_wrapper check(bool cond, bool abort, std::string_view prompt, std::string_view file, size_t line)
+detail::log_wrapper check(bool cond, bool abort, const std::string& prompt, const std::string& file, size_t line)
 {
     if (!cond) {
         auto& logger = Logger::getInstance();

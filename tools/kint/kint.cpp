@@ -546,9 +546,13 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
             cur_rng[&inst] = new_range.unionWith(cur_rng[&inst]);
         }
 
-        if (&cur_rng != &sum_rng)
-            for (auto [bb, rng] : cur_rng)
+        if (&cur_rng != &sum_rng) {
+            for (auto& bb_rng_pair : cur_rng) {
+                auto bb = bb_rng_pair.first;
+                auto rng = bb_rng_pair.second;
                 sum_rng[bb] = sum_rng.count(bb) ? sum_rng[bb].unionWith(rng) : rng;
+            }
+        }
     }
 
     void range_analysis(Function& F)
@@ -570,7 +574,9 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
 
                 MKINT_LOG() << "Merging: " << get_bb_label(pred) << "\t -> " << get_bb_label(bb);
                 auto branch_rng = bb_range[pred];
-                if (auto terminator = pred->getTerminator(); auto br = dyn_cast<BranchInst>(terminator)) {
+                auto terminator = pred->getTerminator();
+                auto br = dyn_cast<BranchInst>(terminator);
+                if (br) {
                     if (br->isConditional()) {
                         if (auto cmp = dyn_cast<ICmpInst>(br->getCondition())) {
                             // br: a op b == true or false
@@ -863,6 +869,11 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
 
     PreservedAnalyses run(Module& M, ModuleAnalysisManager& MAM)
     {
+        // Explicitly mark the unused parameters to avoid warnings
+        (void)MAM;
+        // Explicitly tell the compiler that M is used (even though it's used later in the function)
+        (void)M;
+
         MKINT_LOG() << "Running MKint pass on module " << M.getName();
         
         // Initialize timeout from command line option
@@ -880,7 +891,9 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
                 m_func2tsrc[&F] = std::move(taint_sources);
         }
 
-        for (auto [fp, tsrc] : m_func2tsrc) {
+        for (auto& func_tsrc_pair : m_func2tsrc) {
+            auto fp = func_tsrc_pair.first;
+            auto& tsrc = func_tsrc_pair.second;
             if (taint_bcast_sink(fp, tsrc)) {
                 m_taint_funcs.insert(fp);
             }
@@ -1068,16 +1081,22 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
     void pring_all_ranges() const
     {
         MKINT_LOG() << "========== Function Return Ranges ==========";
-        for (const auto& [F, rng] : m_func2ret_range) {
+        for (const auto& func_rng_pair : m_func2ret_range) {
+            auto F = func_rng_pair.first;
+            auto rng = func_rng_pair.second;
             MKINT_LOG() << rang::bg::black << rang::fg::green << F->getName() << rang::style::reset << " -> " << rng;
         }
 
         MKINT_LOG() << "========== Global Variable Ranges ==========";
-        for (const auto& [GV, rng] : m_global2range) {
+        for (const auto& global_rng_pair : m_global2range) {
+            auto GV = global_rng_pair.first;
+            auto rng = global_rng_pair.second;
             MKINT_LOG() << rang::bg::black << rang::fg::blue << GV->getName() << rang::style::reset << " -> " << rng;
         }
 
-        for (const auto& [GV, rng_vec] : m_garr2ranges) {
+        for (const auto& global_rngvec_pair : m_garr2ranges) {
+            auto GV = global_rngvec_pair.first;
+            auto rng_vec = global_rngvec_pair.second;
             for (size_t i = 0; i < rng_vec.size(); i++) {
                 MKINT_LOG() << rang::bg::black << rang::fg::blue << GV->getName() << "[" << i << "]"
                             << rang::style::reset << " -> " << rng_vec[i];
@@ -1085,12 +1104,19 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
         }
 
         MKINT_LOG() << "============ Function Inst Ranges ============";
-        for (const auto& [F, blk2rng] : m_func2range_info) {
+        for (const auto& func_blk2rng_pair : m_func2range_info) {
+            auto F = func_blk2rng_pair.first;
+            auto& blk2rng = func_blk2rng_pair.second;
             MKINT_LOG() << " ----------- Function Name : " << rang::bg::black << rang::fg::green << F->getName()
                         << rang::style::reset;
-            for (const auto& [blk, inst2rng] : blk2rng) {
-                MKINT_LOG() << " ----------- Basic Block ----------- ";
-                for (const auto& [val, rng] : inst2rng) {
+            for (const auto& blk_inst2rng_pair : blk2rng) {
+                // Explicitly use the 'blk' variable to avoid the unused variable warning
+                auto blk = blk_inst2rng_pair.first;
+                auto& inst2rng = blk_inst2rng_pair.second;
+                MKINT_LOG() << " ----------- Basic Block " << get_bb_label(blk) << " ----------- ";
+                for (const auto& val_rng_pair : inst2rng) {
+                    auto val = val_rng_pair.first;
+                    auto rng = val_rng_pair.second;
                     if (dyn_cast<ConstantInt>(val))
                         continue; // meaningless to pring const range.
 
@@ -1106,7 +1132,9 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
         if (!m_impossible_branches.empty())
             MKINT_LOG() << "============" << rang::fg::yellow << rang::style::bold << " Impossible Branches "
                         << rang::style::reset << "============";
-        for (auto [cmp, is_tbr] : m_impossible_branches) {
+        for (auto& cmp_istbr_pair : m_impossible_branches) {
+            auto cmp = cmp_istbr_pair.first;
+            auto is_tbr = cmp_istbr_pair.second;
             MKINT_WARN() << rang::bg::black << rang::fg::red << cmp->getFunction()->getName() << "::" << *cmp
                          << rang::style::reset << "'s " << rang::fg::red << rang::style::italic
                          << (is_tbr ? "true" : "false") << rang::style::reset << " branch";
@@ -1151,12 +1179,16 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
         const auto& rhs_bv = v2sym(op->getOperand(1));
         const auto rhs_bits = rhs_bv.get_sort().bv_size();
 
-        const auto [is_nsw, is_nuw] = [op] {
+        auto is_nsw_is_nuw = [op] {
             if (const auto ofop = dyn_cast<OverflowingBinaryOperator>(op)) {
                 return std::make_pair(ofop->hasNoSignedWrap(), ofop->hasNoUnsignedWrap());
             }
             return std::make_pair(false, false);
         }();
+        const auto is_nsw = is_nsw_is_nuw.first;
+        // We don't use this variable but keeping it for completeness
+        // Just mark it as used to avoid linter warnings
+        (void)is_nsw_is_nuw.second;
 
         const auto check = [&, this](interr et, bool is_signed) {
             if (m_solver.getValue().check() == z3::sat) { // counter example
@@ -1345,7 +1377,9 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
     void mark_errors()
     {
         if (CheckDeadBranch) {
-            for (auto [cmp, is_tbr] : m_impossible_branches) {
+            for (auto& cmp_istbr_pair : m_impossible_branches) {
+                auto cmp = cmp_istbr_pair.first;
+                auto is_tbr = cmp_istbr_pair.second;
                 if (is_tbr)
                     mark_err<interr::DEAD_TRUE_BR>(cmp);
                 else
@@ -1380,7 +1414,8 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
 
     z3::expr v2sym(const Value* v)
     {
-        if (auto it = m_v2sym.find(v); it != m_v2sym.end())
+        auto it = m_v2sym.find(v);
+        if (it != m_v2sym.end())
             return it->second.getValue();
 
         auto lconst = dyn_cast<ConstantInt>(v);
@@ -1450,7 +1485,9 @@ struct MKintPass : public PassInfoMixin<MKintPass> {
         auto cur_brng = m_func2range_info[cur->getParent()][cur];
 
         if (nullptr != pred) {
-            if (auto terminator = pred->getTerminator(); auto br = dyn_cast<BranchInst>(terminator)) {
+            auto terminator = pred->getTerminator();
+            auto br = dyn_cast<BranchInst>(terminator);
+            if (br) {
                 if (br->isConditional()) {
                     if (auto cmp = dyn_cast<ICmpInst>(br->getCondition())) {
                         // br: a op b == true or false
