@@ -4,8 +4,7 @@
 * 一个用于映射数据结构的迭代器实现。它提供了高效的遍历和访问映射中的键和值。
 */
 
-#ifndef UTILS_MAPITERATOR_H
-#define UTILS_MAPITERATOR_H
+#pragma once
 
 #include <iterator>
 #include <type_traits>
@@ -105,4 +104,3 @@ auto values(MapTy &&Map) -> ValueRange<decltype(Map.begin())> {
   return ValueRange<decltype(Map.begin())>(Map.begin(), Map.end());
 }
 
-#endif

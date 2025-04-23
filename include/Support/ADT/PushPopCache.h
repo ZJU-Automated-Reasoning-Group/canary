@@ -12,8 +12,7 @@
  * Usage senecrios: ?
  */
 
-#ifndef UTILS_PUSHPOPCACHE_H
-#define UTILS_PUSHPOPCACHE_H
+#pragma once
 
 #include <cassert>
 #include <cstddef>
@@ -149,5 +148,3 @@ public:
 
   const std::unordered_set<T> &getCacheSet() { return CacheSet; }
 };
-
-#endif

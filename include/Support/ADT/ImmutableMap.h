@@ -4,8 +4,7 @@
 * 一个不可变的映射实现，是其他不可变容器的基础。它提供了高效的查找、插入和删除操作，同时保持了树的平衡性。它是一个函数式数据结构，操作不会修改原有结构，而是返回新的结构。
 */
 
-#ifndef __UTIL_IMMUTABLEMAP_H__
-#define __UTIL_IMMUTABLEMAP_H__
+#pragma once
 
 #include <functional>
 
@@ -95,4 +94,3 @@ public:
   static size_t getAllocated() { return Tree::allocated; }
 };
 
-#endif

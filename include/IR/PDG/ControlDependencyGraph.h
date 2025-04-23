@@ -1,5 +1,4 @@
-#ifndef CONTROLDEPENDENCYGRAPH_H_
-#define CONTROLDEPENDENCYGRAPH_H_
+#pragma once
 #include "IR/PDG/Graph.h"
 #include "llvm/Analysis/PostDominators.h"
 
@@ -22,5 +21,3 @@ namespace pdg
     llvm::PostDominatorTree *_PDT;
   };
 } // namespace pdg
-
-#endif

@@ -1,5 +1,5 @@
-#ifndef PROGRAMDEPENDENCYGRAPH_H_
-#define PROGRAMDEPENDENCYGRAPH_H_
+#pragma once
+
 #include "IR/PDG/LLVMEssentials.h"
 #include "IR/PDG/Graph.h"
 #include "IR/PDG/PDGCallGraph.h"
@@ -38,4 +38,3 @@ namespace pdg
       ProgramGraph *_PDG;
   };
 }
-#endif

@@ -1,5 +1,4 @@
-#ifndef PDGENUMS_H_
-#define PDGENUMS_H_
+#pragma once
 
 namespace pdg
 {
@@ -56,5 +55,3 @@ namespace pdg
     DATA_WRITE
   };
 }
-
-#endif

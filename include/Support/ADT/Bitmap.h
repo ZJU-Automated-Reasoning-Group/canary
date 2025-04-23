@@ -4,10 +4,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-//#ifndef LLVM_ADT_SPARSEBITVECTOR_H
-//#define LLVM_ADT_SPARSEBITVECTOR_H
-#ifndef MY_SPARSEBITVECTOR_H
-#define MY_SPARSEBITVECTOR_H
+#pragma once
 
 #include <stack>
 #include <cassert>
@@ -1187,5 +1184,3 @@ void dump(const MySparseBitVector<ElementSize> &LHS, llvm::raw_ostream &out) {
 
 } // end llvm namespace
 
-
-#endif

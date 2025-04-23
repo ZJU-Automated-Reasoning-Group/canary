@@ -1,5 +1,4 @@
-#ifndef DATADEPENDENCYGRAPH_H_
-#define DATADEPENDENCYGRAPH_H_
+#pragma once
 #include "IR/PDG/Graph.h"
 #include "llvm/Analysis/MemoryDependenceAnalysis.h"
 #include "llvm/Analysis/MemoryLocation.h"
@@ -25,4 +24,3 @@ namespace pdg
     llvm::MemoryDependenceResults *_mem_dep_res;
   };
 } // namespace pdg
-#endif

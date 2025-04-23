@@ -95,8 +95,8 @@ if(NOT Boost_FOUND AND DOWNLOAD_BOOST)
     
     ExternalProject_Add(
         boost
-        URL https://boostorg.jfrog.io/artifactory/main/release/1.65.0/source/boost_1_65_0.tar.gz
-        URL_HASH SHA256=f9c99df4b1a87b7ee83541a8a70479a9ce79a7de57fd5fdd5a2a3c215ec3c2d8
+        GIT_REPOSITORY https://github.com/boostorg/boost.git
+        GIT_TAG boost-1.65.0
         PREFIX ${CMAKE_BINARY_DIR}/deps
         CONFIGURE_COMMAND ./bootstrap.sh --prefix=${BOOST_INSTALL_DIR}
         BUILD_COMMAND ./b2 --with-system --with-graph install

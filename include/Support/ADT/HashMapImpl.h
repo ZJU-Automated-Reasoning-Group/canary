@@ -1,11 +1,7 @@
 #pragma once
 
-#include <cstddef>
-#include <map>
-
-// an ordered map with a unified API
 template <typename Key, typename Val, typename Impl>
-class MapImpl : public Impl {
+class HashMapImpl : public Impl {
   public:
     using iterator = typename Impl::iterator;
     using const_iterator = typename Impl::const_iterator;
@@ -28,12 +24,4 @@ class MapImpl : public Impl {
             return &it->second;
         return nullptr;
     }
-
-    void reserve(size_t /*unused*/) {
-        // so that we can exchangabily use with HashMap
-    }
 };
-
-template <typename Key, typename Val>
-using Map = MapImpl<Key, Val, std::map<Key, Val>>;
-

@@ -4,12 +4,12 @@
 * 一个有序集合实现，是其他有序容器的基础。它提供了高效的查找、插入和删除操作，同时保持了集合的顺序性。
 */
 
+#pragma once
+
 #include <vector>
 
 using namespace std;
 
-#ifndef ORDEREDSET_H
-#define ORDEREDSET_H
 
 template <class T> class OrderedSet {
 private:
@@ -79,5 +79,3 @@ public:
 
   inline const_iterator end() const { return vectors.end(); }
 };
-
-#endif // ORDEREDSET_H

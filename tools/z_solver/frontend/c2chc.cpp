@@ -9,7 +9,14 @@
 #include "cParser.h"
 #include <iostream>
 #include <string>
-#include <filesystem>
+
+// Helper function to extract filename stem (compatible with C++14)
+std::string getFileStem(const std::string& path) {
+    size_t lastSlash = path.find_last_of("/\\");
+    std::string filename = (lastSlash == std::string::npos) ? path : path.substr(lastSlash + 1);
+    size_t lastDot = filename.find_last_of(".");
+    return (lastDot == std::string::npos) ? filename : filename.substr(0, lastDot);
+}
 
 void printUsage(const char* programName) {
     std::cerr << "Usage: " << programName << " <input_c_file> [output_chc_file]" << std::endl;
@@ -28,8 +35,7 @@ int main(int argc, char* argv[]) {
 
     // If output file is not specified, derive it from input file
     if (argc == 2) {
-        std::filesystem::path inputPath(inputFile);
-        outputFile = inputPath.stem().string() + ".smt2";
+        outputFile = getFileStem(inputFile) + ".smt2";
     } else {
         outputFile = argv[2];
     }

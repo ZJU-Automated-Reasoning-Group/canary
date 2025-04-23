@@ -1,5 +1,5 @@
-#ifndef GRAPHWRITER_H_
-#define GRAPHWRITER_H_
+#pragma once
+
 #include "llvm/ADT/GraphTraits.h"
 #include "llvm/Analysis/DOTGraphTraitsPass.h"
 #include "IR/PDG/GraphTraits.h"
@@ -295,5 +295,3 @@ namespace pdg
   };
 
 } // namespace pdg
-
-#endif

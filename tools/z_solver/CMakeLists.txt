@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 project(z_solver)
 
 # Add these lines to set C++ standard before finding packages
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 # allow for set CMAKE_BUILD_TYPE to be Debug or Release
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

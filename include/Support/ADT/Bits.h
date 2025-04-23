@@ -1,5 +1,4 @@
-#ifndef _DG_SPARSE_BITS_H_
-#define _DG_SPARSE_BITS_H_
+#pragma once
 
 #include <cassert>
 #include <cstddef> // size_t
@@ -223,4 +222,3 @@ class Bits {
     friend class const_iterator;
 };
 
-#endif // _DG_SPARSE_BITS_H_

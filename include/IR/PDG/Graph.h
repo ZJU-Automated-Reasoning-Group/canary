@@ -1,5 +1,4 @@
-#ifndef _GRAPH_H_
-#define _GRAPH_H_
+#pragma once
 #include "IR/PDG/LLVMEssentials.h"
 #include "IR/PDG/PDGNode.h"
 #include "IR/PDG/PDGEdge.h"
@@ -22,9 +21,9 @@ namespace pdg
   class GenericGraph
   {
   public:
-    typedef std::unordered_map<llvm::Value *, Node *> ValueNodeMap;
-    typedef std::set<Edge *> EdgeSet;
-    typedef std::set<Node *> NodeSet;
+    using ValueNodeMap = std::unordered_map<llvm::Value *, Node *>;
+    using EdgeSet = std::set<Edge *>;
+    using NodeSet = std::set<Node *>;
     ValueNodeMap::iterator val_node_map_begin() { return _val_node_map.begin(); }
     ValueNodeMap::iterator val_node_map_end() { return _val_node_map.end(); }
     GenericGraph() = default;
@@ -56,10 +55,10 @@ namespace pdg
   class ProgramGraph : public GenericGraph
   {
   public:
-    typedef std::unordered_map<llvm::Function *, FunctionWrapper *> FuncWrapperMap;
-    typedef std::unordered_map<llvm::CallInst *, CallWrapper *> CallWrapperMap;
-    typedef std::unordered_map<std::string, Node *> ClassNodeMap;
-    typedef std::unordered_map<Node *, llvm::DIType *> NodeDIMap;
+    using FuncWrapperMap = std::unordered_map<llvm::Function *, FunctionWrapper *>;
+    using CallWrapperMap = std::unordered_map<llvm::CallInst *, CallWrapper *>;
+    using ClassNodeMap = std::unordered_map<std::string, Node *>;
+    using NodeDIMap = std::unordered_map<Node *, llvm::DIType *>;
 
     ProgramGraph() = default;
     ProgramGraph(const ProgramGraph &) = delete;
@@ -98,4 +97,3 @@ namespace pdg
   };
 } // namespace pdg
 
-#endif

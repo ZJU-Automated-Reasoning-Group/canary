@@ -1,5 +1,4 @@
-#ifndef LLVMESSENTIALS_H_
-#define LLVMESSENTIALS_H_
+#pragma once
 // include the core functionalities needed by all passes
 #include "llvm/IR/PassManager.h"
 #include "llvm/Pass.h"
@@ -22,4 +21,3 @@
 #include <utility>
 #include <memory>
 
-#endif

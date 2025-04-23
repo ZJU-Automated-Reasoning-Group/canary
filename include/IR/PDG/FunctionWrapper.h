@@ -9,8 +9,7 @@ namespace pdg
   class FunctionWrapper
   {
   public:
-    // Define map types with full template parameters
-    typedef std::map<llvm::Argument *, Tree *, std::less<llvm::Argument *>, std::allocator<std::pair<llvm::Argument * const, Tree *>>> ArgTreeMap;
+    using ArgTreeMap = std::map<llvm::Argument *, Tree *, std::less<llvm::Argument *>, std::allocator<std::pair<llvm::Argument * const, Tree *>>>;
     
     FunctionWrapper(llvm::Function *func)
     {

@@ -1,5 +1,4 @@
-#ifndef GRAPHTRAITS_H_
-#define GRAPHTRAITS_H_
+#pragma once
 #include "IR/PDG/ProgramDependencyGraph.h"
 
 namespace llvm
@@ -31,5 +30,3 @@ namespace llvm
     static ChildIteratorType child_end(NodeRef N) { return ChildIteratorType(N, true); }
   };
 }
-
-#endif

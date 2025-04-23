@@ -1,5 +1,4 @@
-#ifndef PDGCALLGRAPH_H_
-#define PDGCALLGRAPH_H_
+#pragma once
 #include "IR/PDG/LLVMEssentials.h"
 #include "IR/PDG/Graph.h"
 #include "IR/PDG/PDGUtils.h"
@@ -33,5 +32,3 @@ namespace pdg
   private:
   };
 } // namespace pdg
-
-#endif

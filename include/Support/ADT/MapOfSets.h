@@ -4,8 +4,7 @@
 * 一个映射集合实现，是其他集合容器的基础。它提供了高效的查找、插入和删除操作，同时保持了树的平衡性。它是一个函数式数据结构，操作不会修改原有结构，而是返回新的结构。
 */
 
-#ifndef __UTIL_MAPOFSETS_H__
-#define __UTIL_MAPOFSETS_H__
+#pragma once
 
 #include <cassert>
 #include <vector>
@@ -374,4 +373,3 @@ template<class K, class V>
     root.children.clear();
   }
 
-#endif

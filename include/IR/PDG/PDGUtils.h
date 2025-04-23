@@ -1,5 +1,5 @@
-#ifndef PDGUTILS_H_
-#define PDGUTILS_H_
+#pragma once
+
 #include "IR/PDG/LLVMEssentials.h"
 #include "IR/PDG/Tree.h"
 #include <vector>
@@ -38,5 +38,3 @@ namespace pdg
     std::string& rtrim(std::string& s, const char* t = "\t\n\r\f\v");
   } // namespace pdgutils
 } // namespace pdg
-
-#endif

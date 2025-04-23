@@ -1,5 +1,4 @@
-#ifndef CALLWRAPPER_H_
-#define CALLWRAPPER_H_
+#pragma once  
 #include "IR/PDG/LLVMEssentials.h"
 #include "IR/PDG/Tree.h"
 #include "IR/PDG/PDGUtils.h"
@@ -11,7 +10,7 @@ namespace pdg
   {
     private:
       // Define map type with full template parameters
-      typedef std::map<llvm::Value *, Tree *, std::less<llvm::Value *>, std::allocator<std::pair<llvm::Value * const, Tree *>>> ValueTreeMap;
+      using ValueTreeMap = std::map<llvm::Value *, Tree *, std::less<llvm::Value *>, std::allocator<std::pair<llvm::Value * const, Tree *>>>;
       
       llvm::CallInst* _call_inst;
       llvm::Function* _called_func;
@@ -46,5 +45,3 @@ namespace pdg
       void setHasParamTrees() { _has_param_trees = true; }
   };
 }
-
-#endif

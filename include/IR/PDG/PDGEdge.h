@@ -1,5 +1,4 @@
-#ifndef PDGEDGE_H_
-#define PDGEDGE_H_
+#pragma once
 #include "IR/PDG/PDGNode.h"
 #include "IR/PDG/PDGEnums.h"
 
@@ -37,6 +36,4 @@ namespace pdg
     }
   };
 
-} // namespace Edge
-
-#endif
+} // namespace pdg

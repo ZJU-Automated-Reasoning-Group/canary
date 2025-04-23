@@ -1,5 +1,5 @@
-#ifndef DEBUGINFOUTILS_H_
-#define DEBUGINFOUTILS_H_
+#pragma once
+
 #include "IR/PDG/LLVMEssentials.h"
 #include <queue>
 #include <set>
@@ -30,4 +30,3 @@ namespace pdg
   } // namespace dbgutils
 } // namespace pdg
 
-#endif

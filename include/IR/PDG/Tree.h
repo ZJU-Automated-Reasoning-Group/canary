@@ -1,5 +1,4 @@
-#ifndef TREE_H_
-#define TREE_H_
+#pragma once
 #include "IR/PDG/LLVMEssentials.h"
 #include "IR/PDG/DebugInfoUtils.h"
 #include "IR/PDG/PDGNode.h"
@@ -71,5 +70,3 @@ namespace pdg
     int _size;
   };
 } // namespace pdg
-
-#endif

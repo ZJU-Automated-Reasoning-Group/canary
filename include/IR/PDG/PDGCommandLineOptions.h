@@ -1,5 +1,4 @@
-#ifndef PDGCMDOPTIONS_H_
-#define PDGCMDOPTIONS_H_
+#pragma once
 
 namespace pdg
 {
@@ -7,5 +6,3 @@ namespace pdg
   extern bool DOTONLYCDG;
   extern bool DEBUG;
 }
-
-#endif

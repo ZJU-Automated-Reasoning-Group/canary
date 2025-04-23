@@ -1,5 +1,4 @@
-#ifndef NODE_H_
-#define NODE_H_
+#pragma once
 #include "IR/PDG/LLVMEssentials.h"
 #include "IR/PDG/PDGEdge.h"
 #include "IR/PDG/PDGEnums.h"
@@ -125,4 +124,3 @@ namespace pdg
   };
 
 } // namespace pdg
-#endif
