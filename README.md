@@ -17,6 +17,7 @@ The current version has been tested on x86 Linux and ARM Mac using LLVM-12 and L
   We copy these files as LLVM removed them in the transition from version 14 to 15
 - **Sea-DSA**: A context-sensitive, field-sensitive alias analysis based on Data Structure Analysis (See `lib/Alias/seadsa`)
 - **Andersen**: Context-insensitive points-to analysis implementation (without on-the-fly callgraph construction) (See `lib/Alias/Andersen`)
+- **FPA**: Function Pointer Analysis with multiple approaches (FLTA, MLTA, MLTADF, KELP) for resolving indirect function calls (See `lib/Alias/FPA`)
 
 ### Intermediate Representations
 
@@ -135,6 +136,32 @@ Key options:
 - `--sea-dsa-dot`: Generate DOT files visualizing memory graphs
 - `--sea-dsa-callgraph-dot`: Generate DOT files of the complete call graph (currently disabled in this version)
 - `--outdir <DIR>`: Specify an output directory for generated files
+
+### Using FPA
+
+The FPA tool provides several algorithms for function pointer analysis:
+
+```bash
+./fpa [options] <input bitcode files>
+```
+
+Key options:
+- `-analysis-type=<N>`: Select analysis algorithm (1=FLTA, 2=MLTA, 3=MLTADF, 4=KELP)
+- `-max-type-layer=<N>`: Set maximum type layer for MLTA analysis (default: 10)
+- `-debug`: Enable debug output
+- `-output-file=<path>`: Output file path for results (use "cout" for standard output)
+
+Examples:
+```bash
+# Using FLTA analysis
+./fpa -analysis-type=1 input.bc
+
+# Using MLTA analysis with output to file
+./fpa -analysis-type=2 -output-file=results.txt input.bc
+
+# Using KELP analysis with debug info
+./fpa -analysis-type=4 -debug input.bc
+```
 
 ### Using Kint
 

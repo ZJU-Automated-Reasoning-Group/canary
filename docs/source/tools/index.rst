@@ -11,6 +11,7 @@ This section provides information about the various tools available in the Lotus
    canary
    seadsa-tool
    owl
+   fpa
 
 Available Tools
 ---------------
@@ -20,6 +21,7 @@ Available Tools
 - :doc:`Canary <canary>`: Null pointer analysis
 - :doc:`Sea-DSA <seadsa-tool>`: Data structure analysis
 - :doc:`OWL <owl>`: SMT solver
+- :doc:`FPA <fpa>`: Function pointer analysis
 
 Tool Usage Examples
 -------------------
@@ -42,5 +44,13 @@ Context-Sensitive Reachability Indexing
 
    # Run CSR with Grail indexing
    ./csr -n 1000 -m grail ./dataset/example.txt
+
+Function Pointer Analysis
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   # Run MLTA analysis
+   ./fpa -analysis-type=2 -output-file=results.txt input.bc
 
 For detailed usage instructions for each tool, refer to the specific tool documentation pages listed above. 
