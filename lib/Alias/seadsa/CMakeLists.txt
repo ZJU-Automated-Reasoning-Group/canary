@@ -37,7 +37,15 @@ add_library(SeaDsaAnalysis
 
 # Link against LLVM libraries
 target_link_libraries(SeaDsaAnalysis PUBLIC
-  ${LLVM_LIBRARIES}
+  LLVMCore
+  LLVMAnalysis
+  LLVMSupport
+  LLVMIRReader
+  LLVMBitWriter
+  LLVMTransformUtils
+  LLVMTarget
+  LLVMPasses
+  LLVMInstCombine
 )
 
 # Set include directories
