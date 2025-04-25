@@ -9,8 +9,10 @@ add_library(CanarySupport STATIC
         Debug.cpp
         Log.cpp
         StringUtils.cpp
-        FileUtils.cpp
         MultiThreading.cpp
         Timer.cpp
         RNG.cpp
+        IO/FileUtils.cpp
+        IO/ReadIR.cpp
+        IO/WriteIR.cpp
 )
