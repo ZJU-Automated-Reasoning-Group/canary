@@ -3,11 +3,10 @@ add_executable(fpa fpa.cpp)
 target_link_libraries(fpa
   PRIVATE
   CanaryFPA
-  LLVMBitReader
+  #LLVMBitReader
   LLVMBitWriter
-  LLVMCore
   LLVMIRReader
-  LLVMSupport
+  #LLVMSupport  
 )
 
 install(TARGETS fpa RUNTIME DESTINATION bin)

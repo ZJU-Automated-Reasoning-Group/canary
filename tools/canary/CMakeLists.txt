@@ -3,7 +3,7 @@ llvm_map_components_to_libnames(LLVM_LINK_COMPONENTS
   Coroutines
   #Support
   Target
-  TransformUtils
+  #TransformUtils
 )
 
 add_executable(canary canary.cpp)
