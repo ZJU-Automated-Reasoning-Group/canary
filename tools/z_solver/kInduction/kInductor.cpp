@@ -52,7 +52,7 @@ bool kInductor::try_induct(int k, z3::expr inv) {
 
 z3::expr_vector kInductor::ite_vars(z3::expr_vector cur) {
 	z3::expr_vector ret(ctx);
-	for (int i = 0; i < cur.size(); ++i) {
+	for (unsigned i = 0; i < cur.size(); ++i) {
 		if (cur[i].is_bv()) { ret.push_back(ctx.bv_const((cur[i].to_string() + "_").c_str(), cur[i].get_sort().bv_size())); }
 		else if (cur[i].is_int()) { ret.push_back(ctx.int_const((cur[i].to_string() + "_").c_str())); }
 	}

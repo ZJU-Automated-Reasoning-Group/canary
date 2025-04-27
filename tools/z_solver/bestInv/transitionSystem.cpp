@@ -9,7 +9,7 @@ transitionSystem::transitionSystem(z3::context& ctx, z3::expr pre, z3::expr tran
 
 z3::expr_vector transitionSystem::get_ori_consts() {
 	z3::expr_vector ret(ctx);
-	for (int i = 0; i < vars.size(); ++i) {
+	for (unsigned i = 0; i < vars.size(); ++i) {
 		ret.push_back(vars[i]);
 	}
 	return ret;
@@ -17,7 +17,7 @@ z3::expr_vector transitionSystem::get_ori_consts() {
 
 z3::expr_vector transitionSystem::get_bar_consts() {
 	z3::expr_vector ret(ctx);
-	for (int i = 0; i < vars.size(); ++i) {
+	for (unsigned i = 0; i < vars.size(); ++i) {
 		ret.push_back(vars_bar[i]);
 	}
 	return ret;
@@ -25,7 +25,7 @@ z3::expr_vector transitionSystem::get_bar_consts() {
 
 z3::expr_vector transitionSystem::get_all_consts() {
 	z3::expr_vector ret(ctx);
-	for (int i = 0; i < vars.size(); ++i) {
+	for (unsigned i = 0; i < vars.size(); ++i) {
 		ret.push_back(vars[i]);
 		ret.push_back(vars_bar[i]);
 	}

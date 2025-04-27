@@ -5,7 +5,7 @@ using namespace std;
 ABVBitwiseInvariant::ABVBitwiseInvariant(transitionSystem trans)
 	: invariant(trans) {
 	size = 0;
-	for (int i = 0; i < trans.vars.size(); ++i) {
+	for (unsigned i = 0; i < trans.vars.size(); ++i) {
 		int size_cur = trans.vars[i].get_sort().bv_size();
 		size += size_cur;
 		z3::expr indi = ctx.bv_const((trans.vars[i].to_string() + "_z").c_str(), size_cur);

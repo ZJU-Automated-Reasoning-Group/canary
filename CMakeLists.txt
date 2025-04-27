@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(canary C CXX)
 
-# Set C++ standard to 14
+# Set C++14 as the standard for all targets in the project
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

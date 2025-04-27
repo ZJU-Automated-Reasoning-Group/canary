@@ -11,6 +11,7 @@ This section covers the alias analysis components available in the Lotus framewo
    sea_dsa
    andersen
    fpa
+   dynamic
 
 Lotus provides several alias analysis implementations with different precision and performance characteristics:
 
@@ -19,5 +20,6 @@ Lotus provides several alias analysis implementations with different precision a
 - :doc:`Sea-DSA <sea_dsa>`: A context-sensitive, pointer-sensitivity alias analysis based on the Data Structure Analysis (DSA, PLDI'07)
 - :doc:`Andersen <andersen>`: Context-insensitive points-to analysis implementation
 - :doc:`FPA <fpa>`: Specialized function pointer analysis with multiple approaches (FLTA, MLTA, KELP)
+- :doc:`Dynamic <dynamic>`: Runtime-based alias analysis that uses program execution data for precision
 
 These alias analyses can be used as standalone tools or as part of larger program analysis workflows. 

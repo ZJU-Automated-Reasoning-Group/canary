@@ -10,6 +10,7 @@ This section provides detailed information about the major components within the
    constraint_solving/index
    bug_finding/index
    utilities/index
+   annotation/index
 
 Alias Analysis
 --------------
@@ -18,6 +19,7 @@ Alias Analysis
 - :doc:`CFLAA <alias_analysis/cflaa>`: Context-Free Language Reachability-based Alias Analysis
 - :doc:`Sea-DSA <alias_analysis/sea_dsa>`: A context-sensitive, field-sensitive alias analysis based on Data Structure Analysis
 - :doc:`Andersen <alias_analysis/andersen>`: Context-insensitive points-to analysis implementation
+- :doc:`Dynamic <alias_analysis/dynamic>`: Runtime-based alias analysis that uses program execution data
 
 Constraint Solving
 ------------------
@@ -30,6 +32,12 @@ Bug Finding
 -----------
 
 - :doc:`Kint <bug_finding/kint>`: Integer bug detector
+
+Annotation System
+----------------
+
+- :doc:`External Pointer Table <annotation/external_pointer_table>`: Provides pointer behavior information for external functions
+- :doc:`External ModRef Table <annotation/external_modref_table>`: Provides memory read/write behavior information for external functions
 
 Utilities
 ---------
