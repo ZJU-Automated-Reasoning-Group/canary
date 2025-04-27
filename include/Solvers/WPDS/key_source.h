@@ -150,7 +150,7 @@ namespace wpds
         void show(std::string& s)
         {
             char x[20];
-            sprintf(x,"%d",value);
+            snprintf(x, sizeof(x), "%d", value);
             s = x;
         }
     };

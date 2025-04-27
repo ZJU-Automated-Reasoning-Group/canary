@@ -20,7 +20,7 @@ AliasResult AndersenAAResult::andersenAlias(const Value *v1, const Value *v2) {
 
   auto itr1 = (anders.ptsGraph).find(n1), itr2 = (anders.ptsGraph).find(n2);
   if (itr1 == (anders.ptsGraph).end() || itr2 == (anders.ptsGraph).end())
-    // We knows nothing about at least one of (v1, v2)
+    // We know nothing about at least one of (v1, v2)
     return AliasResult::MayAlias;
 
   AndersPtsSet &s1 = itr1->second, s2 = itr2->second;

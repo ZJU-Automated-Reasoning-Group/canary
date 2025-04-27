@@ -41,19 +41,20 @@
 #ifndef WITNESS_H
 #define WITNESS_H
 
-#include <iostream>
-#include <stack>
+
 #include "common.h"
 #include "inst_counter.h"
 #include "ref_ptr.h"
 #include "semiring.h"
 #include "UTIL.h"
 #include "key_source.h"
+#include "HashMap.h"
+#include "myallocator.h"
 #include <set>
 #include <list>
 #include <utility>                          /* pair<T1,T2> */
-#include <HashMap.h>
-#include "myallocator.h"
+#include <iostream>
+#include <stack>
 
 namespace wpds
 {
