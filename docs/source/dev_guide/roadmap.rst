@@ -45,9 +45,21 @@ Instrumentation
 ~~~~~~~~~~~~~~~
 
 * Guided fuzzing instrumentation
-* Profiling instrumentation
-* Coverage analysis
-* Dynamic analysis support
+
+
+Numerical Abstract Interpretation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Integrate abstract interpretation frameworks (e.g., IKOS, CLAM/Crab)
+* Implement numerical domains (intervals, octagons, polyhedra)
+
+
+Data Flow Analysis Framework
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Integrate a comprehensive data flow analysis framework
+* Possible integration with Pharsar or similar tools
+
 
 Lower Priority Features
 -----------------------
@@ -58,11 +70,6 @@ Symbolic Execution
 * Integrate symbolic emulation/execution capabilities
 * Possible integration with KLEE or similar tools
 
-Numerical Abstract Interpretation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* Integrate abstract interpretation frameworks (e.g., IKOS, CLAM/Crab)
-* Implement numerical domains (intervals, octagons, polyhedra)
 
 Software Model Checking
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -82,11 +89,6 @@ Clang AST-based Analysis
 * Integrate Clang static analyzer or similar tools
 * Implement bug checking at the AST level
 
-Data Flow Analysis Framework
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* Integrate a comprehensive data flow analysis framework
-* Possible integration with Pharsar or similar tools
 
 Timeline
 --------
