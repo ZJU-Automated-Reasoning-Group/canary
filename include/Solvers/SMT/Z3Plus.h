@@ -67,7 +67,7 @@ bool get_expr_vars(expr &exp, expr_vector &vars) {
       vars.push_back(i);
     }
   } catch (z3::exception &ex) {
-    std::cout << ex.msg() << std::endl;
+    std::cout << ex.msg() << "\n";
     return false;
   }
   return true;
@@ -93,7 +93,7 @@ expr_vector get_vars_difference(expr_vector &vars_a, expr_vector &vars_b) {
       }
     }
   } catch (z3::exception &ex) {
-    std::cout << ex.msg() << std::endl;
+    std::cout << ex.msg() << "\n";
     return ret;
   }
   return ret;
@@ -108,7 +108,7 @@ void get_k_models(z3::expr &exp, int k) {
   z3::solver solver(ctx);
   solver.add(exp);
   while (solver.check() == z3::sat && k >= 1) {
-    std::cout << solver << std::endl;
+    std::cout << solver << "\n";
     // get model
     z3::model m = solver.get_model();
     z3::expr_vector args(ctx);
@@ -162,7 +162,7 @@ std::pair<int, int> get_abstract_interval(expr &pre_cond, expr &query,
       ret.second = opt1.lower(h1).get_numeral_int();
     }
   } catch (z3::exception &ex) {
-    std::cout << ex << std::endl;
+    std::cout << ex << "\n";
   }
   try {
     if (opt2.check() == z3::sat) {
@@ -170,7 +170,7 @@ std::pair<int, int> get_abstract_interval(expr &pre_cond, expr &query,
       ret.first = opt2.upper(h2).get_numeral_int();
     }
   } catch (z3::exception &ex) {
-    std::cout << ex << std::endl;
+    std::cout << ex << "\n";
   }
   return ret;
 }
@@ -310,7 +310,7 @@ bool check_model(expr &exp, context &ctx, vector<func_decl> &decls, uint64_t x,
   model m(ctx);
   expr bfalse = ctx.bool_val(false);
   expr btrue = ctx.bool_val(true);
-  for (auto i = 0; i < num; i++) {
+  for (unsigned i = 0; i < num; i++) {
     if (x & 1) {
       m.add_const_interp(decls[i], btrue);
     } else {

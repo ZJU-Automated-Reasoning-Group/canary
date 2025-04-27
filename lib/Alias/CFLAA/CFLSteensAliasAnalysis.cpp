@@ -54,7 +54,7 @@
 #include "Alias/CFLAA/StratifiedSets.h"
 #include "Alias/CFLAA/CFLSteensAliasAnalysis.h"
 
-#include <algorithm>
+// #include <algorithm>
 #include <cassert>
 #include <limits>
 #include <memory>

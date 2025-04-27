@@ -15,7 +15,7 @@ static char* getLogFileName(const char* dirName)
 {
 	const char* logName = "pts.log";
 	int size = strlen(logName) + strlen(dirName) + 2;
-	char* fileNameStr = malloc(size);
+	char* fileNameStr = (char*)malloc(size);
 	strcpy(fileNameStr, dirName);
 	strcat(fileNameStr, "/");
 	strcat(fileNameStr, logName);

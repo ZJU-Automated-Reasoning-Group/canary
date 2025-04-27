@@ -20,8 +20,12 @@
 
 using namespace std;
 
+#ifndef MAX_VAL
 #define MAX_VAL 100000000
+#endif
+#ifndef MIN_VAL
 #define MIN_VAL -100000000
+#endif
 
 enum NodeType {
     NORMAL = 0,

@@ -43,7 +43,7 @@ static boost::optional<LogRecord> readRecord(std::istream& is)
 			break;
 		default:
 		{
-			std::cerr << static_cast<unsigned>(rec.type) << std::endl;
+			std::cerr << static_cast<unsigned>(rec.type) << "\n";
 			std::cerr << "Illegal record type. Log file must be broken.\n";
 			std::exit(-1);
 		}

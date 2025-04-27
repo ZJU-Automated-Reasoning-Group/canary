@@ -1,8 +1,6 @@
 #include "Alias/Dynamic/DynamicAliasAnalysis.h"
 #include "Alias/Dynamic/AllocType.h"
 #include "Alias/Dynamic/LogProcessor.h"
-
-#include <cassert>
 #include <llvm/ADT/SmallPtrSet.h>
 
 using namespace llvm;

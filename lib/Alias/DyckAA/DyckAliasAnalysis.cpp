@@ -19,7 +19,6 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Support/FileSystem.h>
 #include <cstdio>
-#include <stack>
 
 #include "Alias/DyckAA/DyckAliasAnalysis.h"
 #include "Alias/DyckAA/DyckCallGraph.h"

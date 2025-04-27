@@ -231,7 +231,7 @@ FunctionTypeNode *AAAnalyzer::initFunctionGroup(FunctionType *Ty) {
     // otherwise, new a root
     auto RIt = TyRoots.begin();
     while (RIt != TyRoots.end()) {
-        if (isCompatible((*RIt)->FuncTy, Ty) == FunctionTypeCheckLevel.getValue()) {
+        if ((unsigned) isCompatible((*RIt)->FuncTy, Ty) == FunctionTypeCheckLevel.getValue()) {
             auto *TyNode = new FunctionTypeNode;
             TyNode->FuncTy = Ty;
             TyNode->Root = (*RIt);
@@ -359,7 +359,7 @@ DyckGraphNode *AAAnalyzer::handleGEP(GEPOperator *GEP) {
     Type *AggOrPointerTy = Ptr->getType();
 
     auto NumIndices = GEP->getNumIndices();
-    int IdxIdx = 0;
+    unsigned IdxIdx = 0;
     while (IdxIdx < NumIndices) {
         Value *Idx = GEP->getOperand(++IdxIdx);
         auto *CI = dyn_cast<ConstantInt>(Idx);
@@ -846,7 +846,7 @@ void AAAnalyzer::handleInst(Instruction *Inst, DyckCallGraphNode *Parent) {
         case Instruction::PHI: {
             auto *Phi = (PHINode *) Inst;
             auto Nums = Phi->getNumIncomingValues();
-            for (int K = 0; K < Nums; K++) {
+            for (unsigned K = 0; K < Nums; K++) {
                 Value *P = Phi->getIncomingValue(K);
                 wrapValue(Inst);
                 auto *PV = wrapValue(P);

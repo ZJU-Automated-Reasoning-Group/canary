@@ -139,5 +139,5 @@ string html_escape_string(const string &data) {
     }
   }
 
-  return move(buffer);
+  return buffer;
 }

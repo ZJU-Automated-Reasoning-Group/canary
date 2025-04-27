@@ -5,7 +5,6 @@
 #include "SMTExpr.h"
 #include "SMTObject.h"
 #include "z3++.h"
-#include "z3.h"
 
 class SMTFactory;
 
