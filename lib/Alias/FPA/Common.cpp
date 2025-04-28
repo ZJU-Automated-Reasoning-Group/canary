@@ -267,7 +267,33 @@ int64_t CommonUtil::getGEPOffset(const Value *V, const DataLayout *DL) {
         if (!isa<ConstantInt>(indexOps[i]))
             indexOps[i] = ConstantInt::get(Type::getInt32Ty(ptrTy->getContext()), 0);
     }
-    offset += DL->getIndexedOffsetInType(ptrTy, indexOps);
+    
+    // LLVM 14 compatible method to calculate offset
+    APInt apOffset(DL->getPointerSizeInBits(), 0);
+    if (GEP->accumulateConstantOffset(*DL, apOffset)) {
+        offset += apOffset.getSExtValue();
+    } else {
+        // Manual calculation of offset as fallback
+        Type* currentType = ptrTy;
+        for (unsigned i = 0, e = indexOps.size(); i != e; ++i) {
+            if (StructType *STy = dyn_cast<StructType>(currentType)) {
+                if (ConstantInt *CI = dyn_cast<ConstantInt>(indexOps[i])) {
+                    unsigned fieldNo = CI->getZExtValue();
+                    offset += DL->getStructLayout(STy)->getElementOffset(fieldNo);
+                    currentType = STy->getTypeAtIndex(CI);
+                }
+            } else if (ArrayType *AT = dyn_cast<ArrayType>(currentType)) {
+                currentType = AT->getElementType();
+                if (ConstantInt *CI = dyn_cast<ConstantInt>(indexOps[i])) {
+                    int64_t arrayIdx = CI->getSExtValue();
+                    if (arrayIdx != 0) {
+                        offset += arrayIdx * DL->getTypeAllocSize(currentType).getFixedValue();
+                    }
+                }
+            }
+        }
+    }
+    
     return offset;
 }
 

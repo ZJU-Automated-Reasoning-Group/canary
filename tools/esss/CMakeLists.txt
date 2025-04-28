@@ -1,7 +1,4 @@
 set(LLVM_LINK_COMPONENTS
-  # Core LLVM components
-  # LLVMCore
-  # LLVMSupport
   LLVMBitWriter
   LLVMIRReader
 )
