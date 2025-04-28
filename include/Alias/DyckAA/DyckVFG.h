@@ -84,6 +84,9 @@ public:
 
     value_iterator<std::unordered_map<Value *, DyckVFGNode *>::iterator> node_end() { return {ValueNodeMap.end()}; }
 
+    /// Dump the Value Flow Graph to a DOT file for visualization
+    void dumpToDot(const std::string &FileName) const;
+
 private:
     DyckVFGNode *getOrCreateVFGNode(Value *);
 

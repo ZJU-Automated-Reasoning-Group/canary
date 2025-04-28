@@ -1,5 +1,5 @@
 /*
- *  Popeye lifts protocol source code in C to its specification in BNF
+ 
  *  Copyright (C) 2022 Qingkai Shi <qingkaishi@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

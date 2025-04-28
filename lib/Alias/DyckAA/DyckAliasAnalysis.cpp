@@ -23,6 +23,8 @@
 #include "Alias/DyckAA/DyckAliasAnalysis.h"
 #include "Alias/DyckAA/DyckCallGraph.h"
 #include "Alias/DyckAA/AAAnalyzer.h"
+#include "Alias/DyckAA/DyckVFG.h"
+#include "Alias/DyckAA/DyckModRefAnalysis.h"
 #include "Support/RecursiveTimer.h"
 
 static cl::opt<bool> PrintAliasSetInformation("print-alias-set-info", cl::init(false), cl::Hidden,
@@ -33,6 +35,9 @@ static cl::opt<bool> DotCallGraph("dot-dyck-callgraph", cl::init(false), cl::Hid
 
 static cl::opt<bool> CountFP("count-fp", cl::init(false), cl::Hidden,
                              cl::desc("Calculate how many functions a function pointer may point to."));
+
+static cl::opt<bool> DotVFG("dot-vfg", cl::init(false), cl::Hidden,
+                           cl::desc("Dump the Value Flow Graph to a DOT file"));
 
 char DyckAliasAnalysis::ID = 0;
 static RegisterPass<DyckAliasAnalysis> X("dyckaa", "a unification based alias analysis");
@@ -109,6 +114,21 @@ bool DyckAliasAnalysis::runOnModule(Module &M) {
     if (PrintAliasSetInformation) {
         outs() << "Printing alias set information...\n";
         this->printAliasSetInformation();
+        outs() << "Done!\n\n";
+    }
+    
+    // Create and dump VFG if requested
+    if (DotVFG) {
+        outs() << "Creating Value Flow Graph...\n";
+        DyckModRefAnalysis DMRA;
+        DMRA.runOnModule(M);
+        auto *VFG = new DyckVFG(this, &DMRA, &M);
+        
+        std::string FileName = M.getModuleIdentifier() + ".vfg.dot";
+        outs() << "Dumping VFG to " << FileName << "...\n";
+        VFG->dumpToDot(FileName);
+        
+        delete VFG;
         outs() << "Done!\n\n";
     }
 

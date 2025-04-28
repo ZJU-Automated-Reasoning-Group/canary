@@ -12,21 +12,21 @@
 #include <mutex>
 
 // Prompt and style constants
-constexpr const char* LOG_PROMPT = "[MKint::LOG  ]";
+constexpr const char* LOG_PROMPT = "[LOG]";
 constexpr auto LOG_STYLE_FG = rang::fg::green;
 constexpr auto LOG_STYLE_BG = rang::bg::gray;
 
-constexpr const char* WARN_PROMPT = "[MKint::WARN ]";
+constexpr const char* WARN_PROMPT = "[WARN]";
 constexpr auto WARN_STYLE_FG = rang::fg::yellow;
 
-constexpr const char* ERROR_PROMPT = "[MKint::ERROR]";
+constexpr const char* ERROR_PROMPT = "[ERROR]";
 constexpr auto ERROR_STYLE_FG = rang::fg::red;
 
-constexpr const char* CHECK_PROMPT = "[MKint::CHECK]";
+constexpr const char* CHECK_PROMPT = "[CHECK]";
 constexpr auto CHECK_STYLE_FG = rang::fg::red;
 constexpr auto CHECK_STYLE_BG = rang::bg::gray;
 
-constexpr const char* DEBUG_PROMPT = "[MKint::DEBUG]";
+constexpr const char* DEBUG_PROMPT = "[DEBUG]";
 constexpr auto DEBUG_STYLE_FG = rang::fg::black;
 constexpr auto DEBUG_STYLE_BG = rang::bg::yellow;
 

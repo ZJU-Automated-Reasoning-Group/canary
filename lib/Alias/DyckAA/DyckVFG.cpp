@@ -245,3 +245,81 @@ Function *DyckVFGNode::getFunction() const {
     }
     return nullptr;
 }
+
+void DyckVFG::dumpToDot(const std::string &FileName) const {
+    FILE *FileDesc = fopen(FileName.c_str(), "w+");
+    if (!FileDesc) {
+        errs() << "Error: Cannot open file " << FileName << " for writing\n";
+        return;
+    }
+    
+    fprintf(FileDesc, "digraph vfg {\n");
+    fprintf(FileDesc, "\tnode [shape=box];\n");
+    
+    // Create a map to assign unique IDs to each node
+    std::map<DyckVFGNode *, int> NodeToID;
+    int NextID = 0;
+    
+    // Assign IDs to nodes
+    for (auto It = ValueNodeMap.begin(); It != ValueNodeMap.end(); ++It) {
+        DyckVFGNode *Node = It->second;
+        NodeToID[Node] = NextID++;
+    }
+    
+    // Print nodes
+    for (auto It = ValueNodeMap.begin(); It != ValueNodeMap.end(); ++It) {
+        Value *V = It->first;
+        DyckVFGNode *Node = It->second;
+        int ID = NodeToID[Node];
+        
+        std::string Label;
+        raw_string_ostream OS(Label);
+        
+        // Get function name for better context
+        Function *F = Node->getFunction();
+        if (F) {
+            OS << F->getName() << ": ";
+        }
+        
+        // Print value representation
+        if (V->hasName()) {
+            OS << V->getName();
+        } else {
+            OS << "unnamed_";
+            V->printAsOperand(OS, false);
+        }
+        
+        fprintf(FileDesc, "\tnode%d [label=\"%s\"];\n", ID, OS.str().c_str());
+    }
+    
+    // Print edges
+    for (auto It = ValueNodeMap.begin(); It != ValueNodeMap.end(); ++It) {
+        DyckVFGNode *SrcNode = It->second;
+        int SrcID = NodeToID[SrcNode];
+        
+        for (auto TargetIt = SrcNode->begin(); TargetIt != SrcNode->end(); ++TargetIt) {
+            DyckVFGNode *DestNode = TargetIt->first;
+            int DestID = NodeToID[DestNode];
+            int Label = TargetIt->second;
+            
+            std::string EdgeStyle;
+            if (Label > 0) {
+                // Call edge
+                EdgeStyle = "color=blue,label=\"call:" + std::to_string(Label) + "\"";
+            } else if (Label < 0) {
+                // Return edge
+                EdgeStyle = "color=red,label=\"ret:" + std::to_string(-Label) + "\"";
+            } else {
+                // Regular edge
+                EdgeStyle = "color=black";
+            }
+            
+            fprintf(FileDesc, "\tnode%d -> node%d [%s];\n", SrcID, DestID, EdgeStyle.c_str());
+        }
+    }
+    
+    fprintf(FileDesc, "}\n");
+    fclose(FileDesc);
+    
+    errs() << "Value Flow Graph dumped to: " << FileName << "\n";
+}
