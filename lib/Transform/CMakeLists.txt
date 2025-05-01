@@ -8,4 +8,7 @@ add_library(CanaryTransform STATIC
         RemoveDeadBlock.cpp
         RemoveNoRetFunction.cpp
         SimplifyLatch.cpp
+        #FlattenInit.cpp
+        #SoftFloat.cpp
+        #UnrollVectors.cpp
 )
