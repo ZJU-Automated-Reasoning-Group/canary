@@ -1,3 +1,23 @@
+/**
+ * @file PDGUtils.cpp
+ * @brief Implementation of utility functions for the Program Dependency Graph
+ *
+ * This file provides various utility functions used throughout the PDG system.
+ * These utilities handle common operations related to LLVM IR analysis, type handling,
+ * debug information extraction, and other helper functionality.
+ *
+ * Key functionality:
+ * - Conversion functions between different PDG and LLVM types
+ * - String manipulation and formatting for PDG output
+ * - LLVM IR traversal and analysis helpers
+ * - Debug information extraction and processing
+ * - Type analysis and handling for field-sensitive operations
+ * - Call site and function analysis helpers
+ *
+ * These utilities simplify the implementation of the core PDG functionality
+ * by providing common operations used across multiple components.
+ */
+
 #include "IR/PDG/PDGUtils.h"
 
 using namespace llvm;

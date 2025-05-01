@@ -1,8 +1,21 @@
-/*
+/**
+ * @file SATSolver.cpp
+ * @brief Implementation of a modern DPLL-based SAT solver for Boolean formulas
+ *
+ * This file implements a conflict-driven clause learning (CDCL) SAT solver that serves
+ * as a foundation for SMT solving through bit-blasting and other techniques. It provides:
+ * - Variable selection heuristics based on VSIDS (Variable State Independent Decaying Sum)
+ * - Conflict-driven learning and backtracking
+ * - Restart strategies using the Luby sequence
+ * - Efficient unit propagation through watched literals
+ * - Phase selection based on variable activity
+ * - Solution verification and reporting
+ *
+ * SAT solving is a critical component for bit-precise reasoning in the SMT framework,
+ * especially for handling complex bit-vector operations, arrays, and boolean combinations.
+ *
  * Author: rainoftime
- * File Description: CNF Manager
- * Creation Date:  2017.
- * Modification History:
+ * Creation Date: 2017
  */
 
 #include "Solvers/SMT/SATSolver.h"

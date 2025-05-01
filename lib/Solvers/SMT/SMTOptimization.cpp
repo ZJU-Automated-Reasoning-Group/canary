@@ -1,3 +1,23 @@
+/**
+ * @file SMTOptimization.cpp
+ * @brief Implementation of optimization techniques for SMT constraints
+ *
+ * This file implements various approaches for solving optimization problems over SMT formulas:
+ * - Linear search optimization
+ * - Binary search optimization
+ * - Direct use of Z3's optimization features
+ * - Utility functions for finding minimum and maximum values of variables
+ *
+ * The implementation supports:
+ * - Finding minimum and maximum values for expressions
+ * - Handling both signed and unsigned bitvector constraints
+ * - Configurable timeouts for optimization procedures
+ * - Different search strategies with performance tradeoffs
+ *
+ * These optimization capabilities extend the basic SMT solving functionality to
+ * support minimization and maximization, which are essential for many analysis tasks.
+ */
+
 #include <cstdint>
 #include <iostream>
 #include <map>

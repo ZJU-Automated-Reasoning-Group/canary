@@ -1,8 +1,24 @@
-/*
+/**
+ * @file CNF.cpp
+ * @brief Implementation of CNF (Conjunctive Normal Form) representation and solver
+ *
+ * This file implements functionality for parsing, representing and managing CNF formulas.
+ * CNF is a fundamental format for Boolean formulas that allows efficient SAT solving,
+ * which can be used as the backend for certain SMT operations.
+ *
+ * The implementation provides:
+ * - Parsing CNF formulas from DIMACS format files
+ * - Efficient clause representation and management
+ * - Variable and literal tracking
+ * - Implication graph construction for conflict analysis
+ * - Watch literals for efficient unit propagation
+ * - Activity-based decision heuristics
+ *
+ * This CNF infrastructure forms the foundation for SAT-based solving approaches
+ * within the SMT subsystem.
+ *
  * Author: rainoftime
- * File Description: CNF Manager
- * Creation Date:  2017.
- * Modification History:
+ * Creation Date: 2017
  */
 
 #include "Solvers/SMT/CNF.h"

@@ -1,3 +1,23 @@
+/**
+ * @file DataDependencyGraph.cpp
+ * @brief Implementation of the data dependency analysis for the PDG
+ *
+ * This file implements the DataDependencyGraph pass, which analyzes data dependencies
+ * between program elements. Data dependencies occur when one instruction defines a value
+ * that is used by another instruction (def-use chains).
+ *
+ * Key features:
+ * - Analysis of def-use chains in LLVM IR
+ * - Support for different types of data dependencies (direct, memory, etc.)
+ * - Function-level data dependency analysis
+ * - Integration with the overall PDG framework
+ * - Support for memory-based dependencies through load/store analysis
+ *
+ * The data dependency analysis is a fundamental component of the PDG system,
+ * complementing control dependency analysis to provide a complete view of
+ * program dependencies.
+ */
+
 #include "IR/PDG/DataDependencyGraph.h"
 
 char pdg::DataDependencyGraph::ID = 0;

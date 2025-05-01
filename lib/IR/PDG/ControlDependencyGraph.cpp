@@ -1,3 +1,23 @@
+/**
+ * @file ControlDependencyGraph.cpp
+ * @brief Implementation of the control dependency analysis for the PDG
+ *
+ * This file implements the ControlDependencyGraph pass, which analyzes control
+ * dependencies between program elements. Control dependencies occur when the
+ * execution of one instruction determines whether another instruction executes.
+ *
+ * Key features:
+ * - Analysis of branch instructions and their targets
+ * - Construction of post-dominator trees for control flow analysis
+ * - Function-level control dependency analysis
+ * - Integration with the overall PDG framework
+ * - Support for different types of control dependencies
+ *
+ * The control dependency analysis is a fundamental component of the PDG system,
+ * complementing data dependency analysis to provide a complete view of
+ * program dependencies.
+ */
+
 #include "IR/PDG/ControlDependencyGraph.h"
 
 char pdg::ControlDependencyGraph::ID = 0;

@@ -1,3 +1,23 @@
+/**
+ * @file FunctionWrapper.cpp
+ * @brief Implementation of FunctionWrapper class for function representation in the PDG
+ *
+ * This file implements the FunctionWrapper class, which encapsulates an LLVM Function
+ * and provides various utilities for PDG construction and analysis. The wrapper manages
+ * function-specific information needed for dependency analysis.
+ *
+ * Key features:
+ * - Management of function entry nodes
+ * - Tracking function arguments and their formal parameter trees
+ * - Handling of return values and their corresponding trees
+ * - Management of call instructions within the function
+ * - Support for function-specific control flow and data flow information
+ * - Creating appropriate tree structures for parameter passing analysis
+ *
+ * FunctionWrapper objects are essential for inter-procedural analysis in the PDG system,
+ * as they model how data flows into and out of functions.
+ */
+
 #include "IR/PDG/FunctionWrapper.h"
 
 using namespace llvm;

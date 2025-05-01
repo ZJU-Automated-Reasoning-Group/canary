@@ -1,3 +1,16 @@
+/**
+ * @file AllSMT.cpp
+ * @brief Implementation of the AllSMTSolver class for enumerating all satisfying models
+ *
+ * This file implements the AllSMTSolver class, which extends basic SMT solving to 
+ * enumerate multiple (or all) satisfying models for a given formula. It provides:
+ * - Model enumeration up to a specified number
+ * - Block-based approach that excludes previously found models
+ *
+ * The AllSMT approach is useful for applications that need to find all possible
+ * satisfying assignments or multiple distinct solutions to an SMT formula.
+ */
+
 #include "Solvers/SMT/AllSMT.h"
 #include "z3++.h"
 // #include "z3.h"
@@ -10,11 +23,15 @@ AllSMTSolver::AllSMTSolver() {
     num_clauses = 0;
 }
 
+AllSMTSolver::~AllSMTSolver() {}
+
 int AllSMTSolver::getModels(z3::expr& expr, int k) {
 	z3::context& ctx = expr.ctx();
 	z3::solver solver(ctx);
 	solver.add(expr);
+	int found = 0;
 	while (solver.check() == z3::sat && k >= 1) {
+		found++;
 		std::cout << solver << std::endl;
 		// get model
 		z3::model m = solver.get_model();
@@ -38,4 +55,5 @@ int AllSMTSolver::getModels(z3::expr& expr, int k) {
 		solver.add(mk_or(args));
 		k--;
 	}
+	return found;
 }

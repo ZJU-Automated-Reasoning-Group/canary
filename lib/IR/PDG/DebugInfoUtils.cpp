@@ -1,3 +1,23 @@
+/**
+ * @file DebugInfoUtils.cpp
+ * @brief Implementation of debug information utilities for the PDG system
+ *
+ * This file provides utility functions for accessing and processing LLVM debug
+ * information (DIType, DIVariable, etc.) within the PDG system. These utilities
+ * enable the PDG to leverage debug information for more precise analysis.
+ *
+ * Key functionality:
+ * - Extraction of type information from variables and instructions
+ * - Handling of complex types (structs, arrays, pointers)
+ * - Support for field-sensitive analysis through type information
+ * - Mapping between LLVM IR values and their debug information
+ * - Access to variable source-level information (name, file, line)
+ * - Support for C++ class hierarchy analysis
+ *
+ * The debug information utilities are particularly important for field-sensitive
+ * analysis and for providing meaningful information in PDG visualizations.
+ */
+
 #include "IR/PDG/DebugInfoUtils.h"
 
 using namespace llvm;

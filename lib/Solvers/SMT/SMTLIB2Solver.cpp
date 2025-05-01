@@ -1,3 +1,19 @@
+/**
+ * @file SMTLIB2Solver.cpp
+ * @brief Implementation of the SMT-LIB2 interface for external SMT solvers
+ *
+ * This file implements support for interacting with external SMT solvers through
+ * the standard SMT-LIB2 format. It provides:
+ * - Process-based communication with external solvers
+ * - Parsing of SMT-LIB2 responses (especially model values)
+ * - Support for timeouts and resource limits
+ * - Simple API for satisfiability checking and model extraction
+ *
+ * Unlike the Z3-based solvers, this implementation relies on the textual SMT-LIB2
+ * format and can work with any compliant SMT solver (Z3, CVC4, Boolector, etc.)
+ * that supports the standard.
+ */
+
 #define DEBUG_TYPE "canary"
 
 #include "llvm/ADT/APInt.h"

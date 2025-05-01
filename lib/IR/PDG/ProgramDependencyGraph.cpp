@@ -1,3 +1,23 @@
+/**
+ * @file ProgramDependencyGraph.cpp
+ * @brief Implementation of the Program Dependency Graph (PDG) pass
+ *
+ * This file implements the core PDG pass that builds a complete inter-procedural
+ * program dependency graph for LLVM modules. The PDG integrates both control and data
+ * dependencies and supports field-sensitive, context-insensitive, and flow-insensitive
+ * analysis.
+ *
+ * The PDG construction process involves:
+ * 1. Building the call graph
+ * 2. Connecting global variables with their uses
+ * 3. Connecting intra-procedural control and data dependencies
+ * 4. Connecting inter-procedural dependencies across function calls
+ * 5. Connecting class nodes with their methods
+ *
+ * A key feature is the handling of function parameters through "tree" structures
+ * that enable field-sensitive parameter analysis.
+ */
+
 #include "IR/PDG/ProgramDependencyGraph.h"
 #include <chrono> 
 

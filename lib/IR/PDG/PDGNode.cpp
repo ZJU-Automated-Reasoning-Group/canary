@@ -1,3 +1,21 @@
+/**
+ * @file PDGNode.cpp
+ * @brief Implementation of the Node class for the Program Dependency Graph
+ *
+ * This file implements the Node class which represents vertices in the PDG.
+ * Each node is typically associated with an LLVM Value (instruction, variable, function, etc.)
+ * and maintains connections to other nodes through incoming and outgoing edges.
+ *
+ * The Node class provides methods for:
+ * - Adding neighbor nodes with specific edge types
+ * - Querying incoming and outgoing edges and neighbors
+ * - Filtering neighbors based on edge types
+ * - Checking for specific neighbor relationships
+ *
+ * The edge types represent different kinds of dependencies (control, data, parameter passing, etc.)
+ * between program elements.
+ */
+
 #include "IR/PDG/PDGNode.h"
 
 using namespace llvm;

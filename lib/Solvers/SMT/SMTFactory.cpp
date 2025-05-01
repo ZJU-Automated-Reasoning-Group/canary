@@ -1,3 +1,19 @@
+/**
+ * @file SMTFactory.cpp
+ * @brief Implementation of the SMTFactory class that creates and manages SMT expressions
+ *
+ * This file implements the SMTFactory class, which serves as the primary factory
+ * for creating and managing SMT expressions, solvers, and related objects. It provides:
+ * - Creation of various types of SMT expressions (boolean, bitvector, real, array, etc.)
+ * - Translation of expressions between different Z3 contexts
+ * - Renaming of variables with suffixes for context separation
+ * - Expression substitution and manipulation
+ *
+ * The factory pattern ensures all SMT objects share a common context and
+ * can interact safely. All SMT objects created by this factory become
+ * invalid when the factory is destroyed.
+ */
+
 #include "Solvers/SMT/SMTFactory.h"
 #include "Solvers/SMT/SMTConfigure.h"
 

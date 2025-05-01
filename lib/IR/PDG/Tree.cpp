@@ -1,3 +1,23 @@
+/**
+ * @file Tree.cpp
+ * @brief Implementation of tree structures for field-sensitive analysis in the PDG
+ *
+ * This file implements tree data structures that enable field-sensitive analysis
+ * of complex data types like structs and arrays in the PDG system. Trees represent
+ * the hierarchical structure of data, with each node corresponding to a field or element.
+ *
+ * Key features:
+ * - Field-sensitive representation of struct and array types
+ * - Support for parameter passing in function calls
+ * - Tracking of "in" trees (for parameters before function calls) and 
+ *   "out" trees (for potentially modified values after function calls)
+ * - Management of tree node access types (read/write)
+ * - Tree traversal and manipulation operations
+ *
+ * Trees are particularly important for inter-procedural analysis, where they model
+ * how data flows through function parameters and return values.
+ */
+
 #include "IR/PDG/Tree.h"
 
 using namespace llvm;

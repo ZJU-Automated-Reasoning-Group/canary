@@ -1,3 +1,23 @@
+/**
+ * @file PDGCallGraph.cpp
+ * @brief Implementation of the call graph for the Program Dependency Graph
+ *
+ * This file implements a specialized call graph that captures the calling relationships
+ * between functions in the program. The call graph is an essential component of the PDG
+ * system that enables inter-procedural analysis and dependency tracking.
+ *
+ * Key features:
+ * - Construction of the call graph from LLVM Module
+ * - Support for both direct and indirect function calls
+ * - Integration with the overall PDG system
+ * - Call site detection and management
+ * - Support for call reachability analysis
+ *
+ * The call graph helps optimize PDG construction by providing information about
+ * which functions can potentially call other functions, enabling more focused
+ * dependency analysis.
+ */
+
 #include "IR/PDG/PDGCallGraph.h"
 
 using namespace llvm;

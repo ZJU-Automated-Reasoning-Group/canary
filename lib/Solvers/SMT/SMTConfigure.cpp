@@ -1,3 +1,15 @@
+/**
+ * @file SMTConfigure.cpp
+ * @brief Global configuration settings for the SMT solving subsystem
+ *
+ * This file implements the SMTConfigure class that manages global settings 
+ * for the SMT solver components. Currently it handles:
+ * - Global timeout settings for solver operations
+ * 
+ * The configuration module allows for consistent solver behavior across
+ * different components of the system.
+ */
+
 #include "Solvers/SMT/SMTConfigure.h"
 //#include "z3++.h"
 

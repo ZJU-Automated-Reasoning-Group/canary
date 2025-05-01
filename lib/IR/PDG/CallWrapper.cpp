@@ -1,3 +1,23 @@
+/**
+ * @file CallWrapper.cpp
+ * @brief Implementation of CallWrapper class for call site representation in the PDG
+ *
+ * This file implements the CallWrapper class, which encapsulates a function call site
+ * (CallInst) and provides utilities for PDG construction and analysis at function call
+ * boundaries. The wrapper manages call-specific information needed for dependency analysis.
+ *
+ * Key features:
+ * - Management of call site nodes
+ * - Tracking actual arguments and their parameter trees
+ * - Handling of return values and their corresponding trees
+ * - Supporting both direct and indirect function calls
+ * - Creating appropriate tree structures for parameter passing analysis
+ * - Facilitating inter-procedural data flow analysis
+ *
+ * CallWrapper objects work closely with FunctionWrapper objects to model how data
+ * flows between caller and callee functions in the PDG system.
+ */
+
 #include "IR/PDG/CallWrapper.h"
 
 using namespace llvm;

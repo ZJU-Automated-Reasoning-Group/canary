@@ -1,3 +1,21 @@
+/**
+ * @file SMTExpr.cpp
+ * @brief Implementation of the SMTExpr and SMTExprVec classes for SMT expressions
+ * 
+ * This file implements SMTExpr and SMTExprVec, which represent expressions in the SMT
+ * solving system. It provides:
+ * - Expression creation and manipulation
+ * - Overloaded operators for easy constraint building
+ * - Expression simplification using various techniques (local, contextual, dillig)
+ * - Quantifier elimination and variable forgetting
+ * - Interval abstraction for numeric expressions
+ * - Basic operations for bitvector, boolean, array expressions
+ * - Expression substitution
+ * 
+ * The SMTExpr class serves as the core representation for constraints that can be
+ * added to an SMTSolver for satisfiability checking.
+ */
+
 #include "Solvers/SMT/SMTExpr.h"
 #include "Solvers/SMT/SMTFactory.h"
 #include <algorithm>

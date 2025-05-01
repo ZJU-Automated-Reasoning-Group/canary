@@ -1,3 +1,22 @@
+/**
+ * @file Graph.cpp
+ * @brief Implementation of graph data structures for the Program Dependency Graph
+ *
+ * This file implements the core graph data structures used in the PDG system:
+ * - GenericGraph: A base graph class providing common graph operations
+ * - ProgramGraph: A specific implementation for program dependency analysis
+ *
+ * Features include:
+ * - Mapping LLVM Values to graph nodes
+ * - Graph traversal and reachability analysis
+ * - Node and edge creation and management
+ * - Supporting field-sensitive analysis through tree structures
+ * - Class hierarchy and function call relationship modeling
+ *
+ * The graph implementation allows for extensive queries about program dependencies,
+ * supporting both control and data dependency analyses in an integrated structure.
+ */
+
 #include "IR/PDG/Graph.h"
 
 using namespace llvm;
